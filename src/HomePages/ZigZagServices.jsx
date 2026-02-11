@@ -5,6 +5,7 @@ import { ArrowRight, Sparkles, Activity } from "lucide-react";
 import { useAuthStore } from "../store/authstore"; // ✅ ADD THIS
 import AuthModal from "../components/AuthModal"; // ✅ ADD THIS
 import MobileRestrictionModal from "../components/MobileRestrictionModal"; // ✅ ADD THIS
+import { adminApi } from "../lib/api";
 
 const ZigZagServices = () => {
   // ==========================================
@@ -25,7 +26,7 @@ const ZigZagServices = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const res = await axios.get("/api/services");
+        const res = await adminApi.get("/api/services");
         setServices(res.data);
         const initialIndexes = {};
         res.data.forEach((service, idx) => {

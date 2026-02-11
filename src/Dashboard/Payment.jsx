@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOutletContext } from "react-router-dom";
-import axios from "axios";
+import { api } from "../lib/api";
 import { jsPDF } from "jspdf";
 import MobileDashboardHeader from "../components/MobileDashboardHeader";
 import {
@@ -24,8 +24,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "../store/authstore";
 
-// Configure axios
-axios.defaults.withCredentials = true;
+// Basic plan configuration is in plans array below
 
 // --- PLANS DATA ---
 const plans = [
@@ -128,9 +127,8 @@ function Payment() {
   useEffect(() => {
     const fetchSubscription = async () => {
       try {
-        const res = await axios.get(
-          "/api/payment/interview-status",
-          { withCredentials: true }
+        const res = await api.get(
+          "/api/payment/interview-status"
         );
 
         // ✅ Show subscription even if it's free plan with 1 credit
@@ -152,7 +150,7 @@ function Payment() {
       const fetchHistory = async () => {
         try {
           setHistoryLoading(true);
-          const res = await axios.get("/api/payment/history", { withCredentials: true });
+          const res = await api.get("/api/payment/history");
           if (res.data.success) {
             setPaymentHistory(res.data.history);
           }
@@ -175,7 +173,7 @@ function Payment() {
 
     setIsValidating(true);
     try {
-      const { data } = await axios.post(
+      const { data } = await api.post(
         "/api/promo/validate",
         { code: promoCode, planId }
       );
@@ -190,7 +188,7 @@ function Payment() {
 
         // Refresh order details with promo applied
         try {
-          const orderData = await axios.post("/api/payment/create-order", { planId, promoCode });
+          const orderData = await api.post("/api/payment/create-order", { planId, promoCode });
           setOrderDetails({
             originalAmount: orderData.data.originalAmount,
             upgradeDiscount: orderData.data.upgradeDiscount || 0,
@@ -320,7 +318,7 @@ function Payment() {
         requestData.promoCode = promoCode;
       }
 
-      const { data } = await axios.post(
+      const { data } = await api.post(
         "/api/payment/create-order",
         requestData
       );
@@ -344,7 +342,7 @@ function Payment() {
         description: `${data.planName} - ${data.interviews} Interviews${orderDetails.isUpgrade ? ' (Upgrade)' : ''}`,
         handler: async function (response) {
           try {
-            const verifyRes = await axios.post(
+            const verifyRes = await api.post(
               "/api/payment/verify",
               response
             );
@@ -404,7 +402,7 @@ function Payment() {
 
     // Fetch order details to show upgrade pricing
     try {
-      const { data } = await axios.post("/api/payment/create-order", { planId });
+      const { data } = await api.post("/api/payment/create-order", { planId });
       setOrderDetails({
         originalAmount: data.originalAmount,
         upgradeDiscount: data.upgradeDiscount || 0,

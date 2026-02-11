@@ -21,6 +21,7 @@ import {
   Award
 } from "lucide-react";
 import { useAuthStore } from "../../../../store/authstore";
+import { api, adminApi } from "../../../../lib/api";
 
 // --- ANIMATION VARIANTS ---
 const containerVariants = {
@@ -58,12 +59,8 @@ export default function AptitudeTest() {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const res = await fetch(
-          "/api/aptitude/test/mixed",
-          { credentials: "include" }
-        );
-
-        const data = await res.json();
+        const res = await adminApi.get("/api/aptitude/test/mixed");
+        const data = res.data;
         const qs = data.data || [];
 
         setQuestions(qs);
@@ -83,14 +80,8 @@ export default function AptitudeTest() {
   useEffect(() => {
     const fetchLatestAttempt = async () => {
       try {
-        const res = await fetch(
-          "/api/users/aptitude/latest",
-          {
-            credentials: "include",
-          }
-        );
-
-        const data = await res.json();
+        const res = await api.get("/api/users/aptitude/latest");
+        const data = res.data;
         if (data.success) {
           setAttempt(data.data);
         }
@@ -165,20 +156,13 @@ export default function AptitudeTest() {
 
 
     try {
-      await fetch("/api/users/aptitude/submit", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          topic: activeTopic,
-          totalQuestions: questions.length,
-          correctAnswers: score,
-          percentage,
-          timeTakenSeconds,
-          answers: answersPayload,
-        }),
+      await api.post("/api/users/aptitude/submit", {
+        topic: activeTopic,
+        totalQuestions: questions.length,
+        correctAnswers: score,
+        percentage,
+        timeTakenSeconds,
+        answers: answersPayload,
       });
     } catch (err) {
       console.error("Failed to submit aptitude test", err);

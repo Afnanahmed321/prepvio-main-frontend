@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOutletContext } from "react-router-dom";
 import MobileDashboardHeader from "../components/MobileDashboardHeader";
+import { api } from "../lib/api";
 import {
   Settings, User, Mail, Phone, MapPin, Globe, Briefcase, Save,
   Camera, ExternalLink, ArrowLeft, Sparkles, Cpu, MessageSquare,
@@ -315,7 +315,7 @@ function AccountView({ onNavigate }) {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("/api/users/me", { withCredentials: true });
+        const res = await api.get("/api/users/me");
         const u = res.data.user;
         setUser(u);
 
@@ -348,7 +348,7 @@ function AccountView({ onNavigate }) {
     setSaving(true);
 
     try {
-      const res = await axios.put("/api/users/me", {
+      const res = await api.put("/api/users/me", {
         firstName: formData.firstName,
         lastName: formData.lastName,
         phone: formData.phone,
@@ -359,7 +359,7 @@ function AccountView({ onNavigate }) {
           country: formData.country,
           pincode: formData.pincode,
         },
-      }, { withCredentials: true });
+      });
 
       if (res.data.success && res.data.user) {
         setUser(res.data.user);
@@ -400,10 +400,9 @@ function AccountView({ onNavigate }) {
         const base64Image = event.target?.result;
 
         try {
-          const res = await axios.post(
+          const res = await api.post(
             "/api/users/upload-profile-pic",
-            { profilePic: base64Image },
-            { withCredentials: true }
+            { profilePic: base64Image }
           );
 
           if (res.data.success) {
@@ -551,7 +550,7 @@ function PortfolioView({ onBack }) {
 
   const fetchPortfolio = async () => {
     try {
-      const res = await axios.get("/api/users/portfolio", { withCredentials: true });
+      const res = await api.get("/api/users/portfolio");
       setPortfolio(res.data);
     } catch (err) {
       console.error("Failed to fetch portfolio", err);
@@ -569,18 +568,16 @@ function PortfolioView({ onBack }) {
     try {
       if (editingProject) {
         // Update existing project
-        await axios.put(
+        await api.put(
           `/api/users/projects/${editingProject._id}`,
-          projectData,
-          { withCredentials: true }
+          projectData
         );
         alert("Project updated successfully! ✅");
       } else {
         // Create new project
-        await axios.post(
+        await api.post(
           "/api/users/projects",
-          projectData,
-          { withCredentials: true }
+          projectData
         );
         alert("Project added successfully! ✅");
       }
@@ -599,9 +596,8 @@ function PortfolioView({ onBack }) {
     if (!confirm("Are you sure you want to delete this project?")) return;
 
     try {
-      await axios.delete(
-        `/api/users/projects/${projectId}`,
-        { withCredentials: true }
+      await api.delete(
+        `/api/users/projects/${projectId}`
       );
       alert("Project deleted successfully! ✅");
       fetchPortfolio(); // Refresh data

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useOutletContext } from "react-router-dom";
 import MobileDashboardHeader from "../components/MobileDashboardHeader";
+import { api } from "../lib/api";
 import MobileRestrictionModal from "../components/MobileRestrictionModal"; // ✅ ADD THIS
 
 import {
@@ -570,18 +571,8 @@ const AptitudeTestAnalysis = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch("/api/users/aptitude/attempts", {
-          credentials: "include",
-          headers: {
-            'Accept': 'application/json',
-          }
-        });
-
-        if (!res.ok) {
-          throw new Error(`Failed to fetch: ${res.status}`);
-        }
-
-        const data = await res.json();
+        const res = await api.get("/api/users/aptitude/attempts");
+        const data = res.data;
 
         if (data.success) {
           const formattedTests = (data.data || []).map((test, index) => ({
@@ -680,12 +671,9 @@ const AptitudeTestAnalysis = () => {
 
     try {
       setDeleting(true);
-      const res = await fetch(`/api/users/aptitude/attempts/${deleteTarget}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
+      const res = await api.delete(`/api/users/aptitude/attempts/${deleteTarget}`);
 
-      if (res.ok) {
+      if (res.status === 200) {
         setTests((prev) => prev.filter((t) => t._id !== deleteTarget));
         setDeleteTarget(null);
         setSelectedTest(null);

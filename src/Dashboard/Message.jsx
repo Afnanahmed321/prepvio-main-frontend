@@ -10,9 +10,9 @@ import {
   Phone,
   Video
 } from "lucide-react";
-import axios from "axios";
 import { useOutletContext } from "react-router-dom";
 import MobileDashboardHeader from "../components/MobileDashboardHeader";
+import { api } from "../lib/api";
 import socket from "../socket";
 
 // --- ANIMATION VARIANTS ---
@@ -37,7 +37,7 @@ function Message() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get("/api/chat/messages", { withCredentials: true });
+        const res = await api.get("/api/chat/messages");
         if (res.data.success) {
           setNewMessages(res.data.messages);
         }
@@ -82,7 +82,7 @@ function Message() {
       setNewMessageText(""); // Clear immediately for UX
 
       try {
-        const res = await axios.post("/api/chat/send", { text }, { withCredentials: true });
+        const res = await api.post("/api/chat/send", { text });
         if (res.data.success) {
           // If we want to avoid double-adding if socket emits to sender too:
           // But usually we add manually for instant feedback and check ID

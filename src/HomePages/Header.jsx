@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { DashboardModal } from "../Dashboard/DashBoardPage";
 import socket from "../socket";
 import { useNotificationStore } from "../store/notificationStore";
+import { adminApi } from "../lib/api";
 
 import {
   Menu,
@@ -75,8 +76,8 @@ const Header = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await fetch("/api/courses");
-        const data = await res.json();
+        const res = await adminApi.get("/api/courses");
+        const data = res.data;
 
         const list = Array.isArray(data)
           ? data
