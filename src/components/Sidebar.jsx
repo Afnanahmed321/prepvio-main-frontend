@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNotificationStore } from "../store/notificationStore";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import { api } from "../lib/api";
 import socket from "../socket";
 
 import {
@@ -189,9 +189,8 @@ const Sidebar = ({ mobileOpen, setMobileOpen }) => {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const res = await axios.get(
-          "/api/users/dashboard",
-          { withCredentials: true }
+        const res = await api.get(
+          "/api/users/dashboard"
         );
 
         setLearningCount(res.data.stats.inProgressCourses);

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { api } from '../lib/api';
 
 export const useNotificationStore = create((set) => ({
   notifications: [], // All notifications (for dashboard)
@@ -8,13 +9,9 @@ export const useNotificationStore = create((set) => ({
   // Fetch recent notifications (for bell icon - 2 most recent)
   fetchRecentNotifications: async () => {
     try {
-      const response = await fetch('/api/notifications/recent', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch recent notifications');
-      const data = await response.json();
+      const response = await api.get('/api/notifications/recent');
       // Deduplicate fetched data
-      const uniqueData = data.filter((n, i, arr) => arr.findIndex(x => x._id === n._id) === i);
+      const uniqueData = response.data.filter((n, i, arr) => arr.findIndex(x => x._id === n._id) === i);
       set({ recentNotifications: uniqueData });
     } catch (error) {
       console.error('Error fetching recent notifications:', error);
@@ -24,13 +21,9 @@ export const useNotificationStore = create((set) => ({
   // Fetch all notifications (for dashboard)
   fetchNotifications: async () => {
     try {
-      const response = await fetch('/api/notifications', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch notifications');
-      const data = await response.json();
+      const response = await api.get('/api/notifications');
       // Deduplicate fetched data
-      const uniqueData = data.filter((n, i, arr) => arr.findIndex(x => x._id === n._id) === i);
+      const uniqueData = response.data.filter((n, i, arr) => arr.findIndex(x => x._id === n._id) === i);
       set({ notifications: uniqueData });
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -40,12 +33,8 @@ export const useNotificationStore = create((set) => ({
   // Fetch unread count
   fetchUnreadCount: async () => {
     try {
-      const response = await fetch('/api/notifications/unread-count', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch unread count');
-      const data = await response.json();
-      set({ unreadCount: data.count });
+      const response = await api.get('/api/notifications/unread-count');
+      set({ unreadCount: response.data.count });
     } catch (error) {
       console.error('Error fetching unread count:', error);
     }
@@ -54,12 +43,7 @@ export const useNotificationStore = create((set) => ({
   // Mark single notification as read
   markAsRead: async (id) => {
     try {
-      const response = await fetch(`/api/notifications/${id}/read`, {
-        method: 'PATCH',
-        credentials: 'include'
-      });
-
-      if (!response.ok) throw new Error('Failed to mark as read');
+      await api.patch(`/api/notifications/${id}/read`);
 
       // Update both lists
       set((state) => ({
@@ -79,12 +63,7 @@ export const useNotificationStore = create((set) => ({
   // Mark all notifications as read
   markAllAsRead: async () => {
     try {
-      const response = await fetch('/api/notifications/read-all', {
-        method: 'PATCH',
-        credentials: 'include'
-      });
-
-      if (!response.ok) throw new Error('Failed to mark all as read');
+      await api.patch('/api/notifications/read-all');
 
       set((state) => ({
         notifications: state.notifications.map(n => ({ ...n, isRead: true })),
@@ -99,12 +78,7 @@ export const useNotificationStore = create((set) => ({
   // Delete a notification
   deleteNotification: async (id) => {
     try {
-      const response = await fetch(`/api/notifications/${id}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-
-      if (!response.ok) throw new Error('Failed to delete notification');
+      await api.delete(`/api/notifications/${id}`);
 
       set((state) => {
         const deletedNotif = state.notifications.find(n => n._id === id);

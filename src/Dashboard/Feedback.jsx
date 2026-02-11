@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
-import axios from "axios";
+import { api } from "../lib/api";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import MobileDashboardHeader from "../components/MobileDashboardHeader";
 
@@ -72,7 +72,7 @@ export default function Feedback() {
     e.preventDefault();
 
     try {
-      await axios.post(
+      await api.post(
         "/api/users/feedback",
         {
           courseId,
@@ -80,8 +80,7 @@ export default function Feedback() {
           category,
           rating,
           message: feedbackText,
-        },
-        { withCredentials: true }
+        }
       );
 
       setIsSubmitted(true);

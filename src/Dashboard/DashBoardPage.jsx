@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import axios from "axios";
+import { api } from "../lib/api";
 import MobileMenuButton from "../components/MobileMenuButton";
 import MobileDashboardHeader from "../components/MobileDashboardHeader";
 import { motion, AnimatePresence } from "framer-motion";
@@ -48,7 +48,7 @@ ChartJS.register(
   Legend
 );
 
-const USER_API = "/api";
+const USER_API = "";
 
 // --- ASSETS & CONFIGURATION ---
 const ASSETS = {
@@ -688,9 +688,8 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const res = await axios.get(
-          `${USER_API}/users/dashboard`,
-          { withCredentials: true }
+        const res = await api.get(
+          `${USER_API}/api/users/dashboard`
         );
         setDashboard(res.data);
       } catch (err) {

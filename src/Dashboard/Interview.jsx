@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 
 import { useAuthStore } from '../store/authstore';
+import { api } from '../lib/api';
 import UpgradeModal from '../components/UpgradeModal';
 
 // --- HELPER FUNCTIONS ---
@@ -254,12 +255,8 @@ const InterviewAnalysisPage = () => {
     const fetchInterviews = async () => {
       try {
         setLoading(true);
-        const res = await fetch(
-          "/api/interview-session/my",
-          { credentials: 'include' }
-        );
-        const data = await res.json();
-        setInterviews(data.interviews || []);
+        const response = await api.get("/api/interview-session/my");
+        setInterviews(response.data.interviews || []);
       } catch (error) {
         console.error("Failed to fetch interviews:", error);
         alert("Failed to load interviews. Please try again.");
@@ -333,13 +330,7 @@ const InterviewAnalysisPage = () => {
     try {
       setDeleting(true);
 
-      await fetch(
-        `/api/interview-session/${deleteTarget}`,
-        { 
-          method: 'DELETE',
-          credentials: 'include'
-        }
-      );
+      await api.delete(`/api/interview-session/${deleteTarget}`);
 
       setInterviews((prev) =>
         prev.filter((i) => i._id !== deleteTarget)
