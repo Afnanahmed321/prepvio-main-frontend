@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mic, MicOff, X, MessageCircle, Send, Loader2, Sparkles, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
+import { api } from '../lib/api';
 import { useAuthStore } from '../store/authstore.js';
 
 const VoiceAssistant = () => {
@@ -123,7 +123,7 @@ const VoiceAssistant = () => {
     const askAI = async (query) => {
         setIsLoading(true);
         try {
-            const response = await axios.post('/api/ai/chat', {
+            const response = await api.post('/ai/chat', {
                 message: query
             }, { withCredentials: true });
 

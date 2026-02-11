@@ -315,7 +315,7 @@ function AccountView({ onNavigate }) {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await api.get("/api/users/me");
+        const res = await api.get("/users/me");
         const u = res.data.user;
         setUser(u);
 
@@ -348,7 +348,7 @@ function AccountView({ onNavigate }) {
     setSaving(true);
 
     try {
-      const res = await api.put("/api/users/me", {
+      const res = await api.put("/users/me", {
         firstName: formData.firstName,
         lastName: formData.lastName,
         phone: formData.phone,
@@ -401,7 +401,7 @@ function AccountView({ onNavigate }) {
 
         try {
           const res = await api.post(
-            "/api/users/upload-profile-pic",
+            "/users/upload-profile-pic",
             { profilePic: base64Image }
           );
 
@@ -550,7 +550,7 @@ function PortfolioView({ onBack }) {
 
   const fetchPortfolio = async () => {
     try {
-      const res = await api.get("/api/users/portfolio");
+      const res = await api.get("/users/portfolio");
       setPortfolio(res.data);
     } catch (err) {
       console.error("Failed to fetch portfolio", err);
@@ -569,14 +569,14 @@ function PortfolioView({ onBack }) {
       if (editingProject) {
         // Update existing project
         await api.put(
-          `/api/users/projects/${editingProject._id}`,
+          `/users/projects/${editingProject._id}`,
           projectData
         );
         alert("Project updated successfully! ✅");
       } else {
         // Create new project
         await api.post(
-          "/api/users/projects",
+          "/users/projects",
           projectData
         );
         alert("Project added successfully! ✅");
@@ -597,7 +597,7 @@ function PortfolioView({ onBack }) {
 
     try {
       await api.delete(
-        `/api/users/projects/${projectId}`
+        `/users/projects/${projectId}`
       );
       alert("Project deleted successfully! ✅");
       fetchPortfolio(); // Refresh data

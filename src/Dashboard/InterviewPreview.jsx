@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Editor from "@monaco-editor/react";
 
 import { useAuthStore } from "../store/authstore";
+import { api } from "../lib/api";
 import UpgradeModal from "../components/UpgradeModal";
 
 // Static 3D Model
@@ -446,12 +447,9 @@ const InterviewPreview = () => {
 
         const fetchInterview = async () => {
             try {
-                const res = await fetch(
-                    `/api/interview-session/${sessionId}`,
-                    { credentials: "include" }
-                );
+                const res = await api.get(`/interview-session/${sessionId}`);
 
-                const data = await res.json();
+                const data = res.data;
 
                 if (!data.success) throw new Error("Fetch failed");
 

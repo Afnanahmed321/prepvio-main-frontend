@@ -571,7 +571,7 @@ const AptitudeTestAnalysis = () => {
         setLoading(true);
         setError(null);
 
-        const res = await api.get("/api/users/aptitude/attempts");
+        const res = await api.get("/users/aptitude/attempts");
         const data = res.data;
 
         if (data.success) {
@@ -671,7 +671,7 @@ const AptitudeTestAnalysis = () => {
 
     try {
       setDeleting(true);
-      const res = await api.delete(`/api/users/aptitude/attempts/${deleteTarget}`);
+      const res = await api.delete(`/users/aptitude/attempts/${deleteTarget}`);
 
       if (res.status === 200) {
         setTests((prev) => prev.filter((t) => t._id !== deleteTarget));

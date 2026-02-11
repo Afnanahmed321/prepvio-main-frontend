@@ -59,7 +59,7 @@ export default function AptitudeTest() {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const res = await adminApi.get("/api/aptitude/test/mixed");
+        const res = await adminApi.get("/aptitude/test/mixed");
         const data = res.data;
         const qs = data.data || [];
 
@@ -80,7 +80,7 @@ export default function AptitudeTest() {
   useEffect(() => {
     const fetchLatestAttempt = async () => {
       try {
-        const res = await api.get("/api/users/aptitude/latest");
+        const res = await api.get("/users/aptitude/latest");
         const data = res.data;
         if (data.success) {
           setAttempt(data.data);
@@ -156,7 +156,7 @@ export default function AptitudeTest() {
 
 
     try {
-      await api.post("/api/users/aptitude/submit", {
+      await api.post("/users/aptitude/submit", {
         topic: activeTopic,
         totalQuestions: questions.length,
         correctAnswers: score,

@@ -9,7 +9,7 @@ export const useNotificationStore = create((set) => ({
   // Fetch recent notifications (for bell icon - 2 most recent)
   fetchRecentNotifications: async () => {
     try {
-      const response = await api.get('/api/notifications/recent');
+      const response = await api.get('/notifications/recent');
       // Deduplicate fetched data
       const uniqueData = response.data.filter((n, i, arr) => arr.findIndex(x => x._id === n._id) === i);
       set({ recentNotifications: uniqueData });
@@ -21,7 +21,7 @@ export const useNotificationStore = create((set) => ({
   // Fetch all notifications (for dashboard)
   fetchNotifications: async () => {
     try {
-      const response = await api.get('/api/notifications');
+      const response = await api.get('/notifications');
       // Deduplicate fetched data
       const uniqueData = response.data.filter((n, i, arr) => arr.findIndex(x => x._id === n._id) === i);
       set({ notifications: uniqueData });
@@ -33,7 +33,7 @@ export const useNotificationStore = create((set) => ({
   // Fetch unread count
   fetchUnreadCount: async () => {
     try {
-      const response = await api.get('/api/notifications/unread-count');
+      const response = await api.get('/notifications/unread-count');
       set({ unreadCount: response.data.count });
     } catch (error) {
       console.error('Error fetching unread count:', error);
@@ -43,7 +43,7 @@ export const useNotificationStore = create((set) => ({
   // Mark single notification as read
   markAsRead: async (id) => {
     try {
-      await api.patch(`/api/notifications/${id}/read`);
+      await api.patch(`/notifications/${id}/read`);
 
       // Update both lists
       set((state) => ({
@@ -63,7 +63,7 @@ export const useNotificationStore = create((set) => ({
   // Mark all notifications as read
   markAllAsRead: async () => {
     try {
-      await api.patch('/api/notifications/read-all');
+      await api.patch('/notifications/read-all');
 
       set((state) => ({
         notifications: state.notifications.map(n => ({ ...n, isRead: true })),
@@ -78,7 +78,7 @@ export const useNotificationStore = create((set) => ({
   // Delete a notification
   deleteNotification: async (id) => {
     try {
-      await api.delete(`/api/notifications/${id}`);
+      await api.delete(`/notifications/${id}`);
 
       set((state) => {
         const deletedNotif = state.notifications.find(n => n._id === id);

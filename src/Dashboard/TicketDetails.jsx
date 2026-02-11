@@ -9,7 +9,7 @@ import {
     MessageSquare,
     User
 } from 'lucide-react';
-import axios from 'axios';
+import { api } from '../lib/api';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import socket from '../socket';
 import MobileDashboardHeader from '../components/MobileDashboardHeader';
@@ -56,9 +56,7 @@ const TicketDetail = () => {
     const fetchTicketDetails = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`/api/tickets/${ticketId}`, {
-                withCredentials: true
-            });
+            const res = await api.get(`/tickets/${ticketId}`);
 
             if (res.data.success) {
                 setTicket(res.data.ticket);
@@ -80,10 +78,8 @@ const TicketDetail = () => {
 
         try {
             setSending(true);
-            const res = await axios.post(`/api/tickets/${ticketId}/reply`, {
+            const res = await api.post(`/tickets/${ticketId}/reply`, {
                 text: newMessage.trim()
-            }, {
-                withCredentials: true
             });
 
             if (res.data.success) {

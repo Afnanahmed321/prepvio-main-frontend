@@ -255,7 +255,7 @@ const InterviewAnalysisPage = () => {
     const fetchInterviews = async () => {
       try {
         setLoading(true);
-        const response = await api.get("/api/interview-session/my");
+        const response = await api.get("/interview-session/my");
         setInterviews(response.data.interviews || []);
       } catch (error) {
         console.error("Failed to fetch interviews:", error);
@@ -330,7 +330,7 @@ const InterviewAnalysisPage = () => {
     try {
       setDeleting(true);
 
-      await api.delete(`/api/interview-session/${deleteTarget}`);
+      await api.delete(`/interview-session/${deleteTarget}`);
 
       setInterviews((prev) =>
         prev.filter((i) => i._id !== deleteTarget)

@@ -31,7 +31,7 @@ function CurrentPlan() {
       try {
         setLoading(true);
         const res = await axios.get(
-          "/api/payment/interview-status",
+          "/payment/interview-status",
           { withCredentials: true }
         );
 
@@ -71,7 +71,7 @@ function CurrentPlan() {
   const handleRefresh = async () => {
     await refreshUser();
     const res = await axios.get(
-      "/api/payment/interview-status",
+      "/payment/interview-status",
       { withCredentials: true }
     );
     if (res.data.success && res.data.subscription) {

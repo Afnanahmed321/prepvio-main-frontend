@@ -102,7 +102,7 @@ function Channels() {
         window.scrollTo(0, 0);
         const fetchChannels = async () => {
             try {
-                const res = await adminApi.get(`/api/channels/course/${courseId}`);
+                const res = await adminApi.get(`/channels/course/${courseId}`);
                 if (Array.isArray(res.data)) {
                     setChannels(res.data);
                 } else {

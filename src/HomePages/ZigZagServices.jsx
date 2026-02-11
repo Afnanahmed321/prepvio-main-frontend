@@ -26,7 +26,7 @@ const ZigZagServices = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const res = await adminApi.get("/api/services");
+        const res = await adminApi.get("/services");
         setServices(res.data);
         const initialIndexes = {};
         res.data.forEach((service, idx) => {

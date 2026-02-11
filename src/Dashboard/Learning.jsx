@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import axios from "axios";
+import { api } from "../lib/api";
 import { motion, AnimatePresence } from "framer-motion";
 import MobileDashboardHeader from "../components/MobileDashboardHeader";
 import {
@@ -19,8 +19,6 @@ import {
   Zap
 } from "lucide-react";
 
-const BASE_URL = "/api";
-const USER_API = "/api";
 
 // --- ANIMATION VARIANTS ---
 const containerVariants = {
@@ -66,10 +64,7 @@ function Learning() {
   useEffect(() => {
     const fetchLearning = async () => {
       try {
-        const res = await axios.get(
-          `${USER_API}/users/my-learning`,
-          { withCredentials: true }
-        );
+        const res = await api.get("/users/my-learning");
 
         const data = (res.data.data || []).map((course) => {
           const percentage =
@@ -136,7 +131,7 @@ function Learning() {
 
   const handleRemoveCourse = async (course) => {
     try {
-      await axios.delete(`/api/users/course-progress/${course.courseId}/${course.channelId}`, { withCredentials: true });
+      await api.delete(`/users/course-progress/${course.courseId}/${course.channelId}`);
       setCourses(courses.filter(c => c.id !== course.id));
     } catch (err) {
       console.error("Failed to remove course", err);

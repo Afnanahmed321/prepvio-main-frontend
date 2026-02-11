@@ -73,7 +73,7 @@ export default function Feedback() {
 
     try {
       await api.post(
-        "/api/users/feedback",
+        "/users/feedback",
         {
           courseId,
           channelId,

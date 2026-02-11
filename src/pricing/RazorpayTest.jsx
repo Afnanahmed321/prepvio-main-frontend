@@ -1,7 +1,6 @@
-import axios from "axios";
+import { api } from "../lib/api";
 import { useState } from "react";
 
-axios.defaults.withCredentials = true;
 
 function RazorpayTest() {
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -26,8 +25,8 @@ function RazorpayTest() {
     console.log("Validating promo code:", promoCode, "for plan:", planId);
     setIsValidating(true);
     try {
-      const { data } = await axios.post(
-        "/api/promo/validate",
+      const { data } = await api.post(
+        "/promo/validate",
         { code: promoCode, planId }
       );
 
@@ -60,8 +59,8 @@ function RazorpayTest() {
       }
 
       console.log("Creating order with data:", requestData);
-      const { data } = await axios.post(
-        "/api/payment/create-order",
+      const { data } = await api.post(
+        "/payment/create-order",
         requestData
       );
 
@@ -76,8 +75,8 @@ function RazorpayTest() {
         description: `${data.planName} - ${data.interviews} Interviews`,
         handler: async function (response) {
           try {
-            const verifyRes = await axios.post(
-              "/api/payment/verify",
+            const verifyRes = await api.post(
+              "/payment/verify",
               response
             );
 

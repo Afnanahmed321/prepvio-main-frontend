@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import { api } from "../../../../lib/api";
 
 // Import the coding questions
 import { codingQuestions } from "./codingQuestions";
@@ -793,7 +793,7 @@ useGLTF.preload('/final_prepvio_model.glb');
 
 // --- API Constants ---
 const FIREWORKS_API_URL = "https://api.fireworks.ai/inference/v1/chat/completions";
-const BACKEND_UPLOAD_URL = "/api/upload";
+const BACKEND_UPLOAD_URL = "/upload";
 const apiKey = "fw_3ZbHnsRsTg9cHxxESpgxzMim";
 
 // --- Utilities: format problem for chat (keeps chat+editor in sync) ---
@@ -927,8 +927,8 @@ const InterviewScreen = ({
       try {
         console.log("🔍 Fetching rounds for:", { companyType, role });
 
-        const response = await axios.get(
-          `/api/companies/${encodeURIComponent(companyType)}/${encodeURIComponent(role)}/rounds`
+        const response = await api.get(
+          `/companies/${encodeURIComponent(companyType)}/${encodeURIComponent(role)}/rounds`
         );
 
         let roundsList = [];
@@ -1939,22 +1939,18 @@ In the meantime, if you have any follow-up questions, please don't hesitate to r
     try {
       setUploadStatus("Generating your performance report...");
 
-      const response = await fetch(BACKEND_UPLOAD_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          filename,
-          content: reportText,
-          role,
-          companyType,
-          solvedProblems,
-          sessionId,
-        }),
+      const response = await api.post(BACKEND_UPLOAD_URL, {
+        filename,
+        content: reportText,
+        role,
+        companyType,
+        solvedProblems,
+        sessionId,
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (!response.ok) {
+      if (response.status !== 200 && response.status !== 201) {
         throw new Error(data.details || data.error || "Upload failed");
       }
 
@@ -1963,18 +1959,13 @@ In the meantime, if you have any follow-up questions, please don't hesitate to r
       setUploadStatus("Saving your interview session...");
 
       if (sessionId) {
-        await fetch(
-          `/api/interview-session/complete/${sessionId}`,
+        await api.patch(
+          `/interview-session/complete/${sessionId}`,
           {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({
-              reportUrl: data.publicUrl,
-              messages: chatMessages,
-              solvedProblems: solvedProblems,
-              highlightClips: Object.values(highlightBufferRef.current),
-            }),
+            reportUrl: data.publicUrl,
+            messages: chatMessages,
+            solvedProblems: solvedProblems,
+            highlightClips: Object.values(highlightBufferRef.current),
           }
         );
 

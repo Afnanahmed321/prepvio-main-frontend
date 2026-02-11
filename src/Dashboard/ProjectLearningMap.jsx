@@ -790,7 +790,7 @@ export default function ProjectLearningMap() {
     const fetchAllData = useCallback(async () => {
         try {
             // Fetch courses list from Admin Backend
-            const coursesRes = await adminApi.get("/api/courses");
+            const coursesRes = await adminApi.get("/courses");
             const coursesData = coursesRes.data;
             setCourses(coursesData);
 
@@ -810,7 +810,7 @@ export default function ProjectLearningMap() {
             }
 
             // Fetch user's completed courses list from User Backend
-            const completedCoursesRes = await api.get("/api/users/completed-courses");
+            const completedCoursesRes = await api.get("/users/completed-courses");
             const userCompletedCourses = completedCoursesRes.data?.completedCourses || [];
             setCompletedCourses(userCompletedCourses);
 
@@ -823,11 +823,11 @@ export default function ProjectLearningMap() {
                 setIsCourseCompleted(isCompleted);
 
                 // Fetch projects regardless of completion to get the roadmap count
-                const projectsRes = await adminApi.get(`/api/projects/by-course/${currentSelected._id}`);
+                const projectsRes = await adminApi.get(`/projects/by-course/${currentSelected._id}`);
                 const projectsFromServer = projectsRes.data || [];
 
                 // Fetch Submissions to check progress
-                const subRes = await api.get("/api/project-submissions/my-submissions");
+                const subRes = await api.get("/project-submissions/my-submissions");
                 const subData = subRes.data?.data || [];
                 setSubmissions(subData);
 
@@ -924,7 +924,7 @@ export default function ProjectLearningMap() {
     const handleSubmission = useCallback(async (data) => {
         if (!selectedProject) return;
         try {
-            await api.post("/api/project-submissions/submit", {
+            await api.post("/project-submissions/submit", {
                 projectId: selectedProject._id || selectedProject.id,
                 projectTitle: selectedProject.title,
                 link: data.link,

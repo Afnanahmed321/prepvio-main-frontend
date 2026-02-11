@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { api } from "../../../../lib/api.js";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, PlayCircle, CheckCircle2, Clock, Sparkles, X, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,8 +27,8 @@ const Rounds = ({ companyType, role }) => {
   useEffect(() => {
     const fetchRounds = async () => {
       try {
-        const res = await axios.get(
-          `/api/companies/${encodeURIComponent(
+        const res = await api.get(
+          `/companies/${encodeURIComponent(
             companyType
           )}/${encodeURIComponent(role)}/rounds`
         );
@@ -60,10 +60,9 @@ const Rounds = ({ companyType, role }) => {
       console.log("✅ Camera access granted");
 
       // Start interview session (this will consume 1 credit)
-      const res = await axios.post(
-        "/api/interview-session/start",
-        { companyType, role },
-        { withCredentials: true }
+      const res = await api.post(
+        "/interview-session/start",
+        { companyType, role }
       );
 
       console.log("✅ Session started:", res.data);

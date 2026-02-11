@@ -143,7 +143,7 @@ const SelectRolesAndCompany = ({
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const res = await api.get("/api/companies");
+        const res = await api.get("/companies");
         if (Array.isArray(res.data)) setCompanies(res.data);
       } catch (error) {
         console.error("Error fetching companies:", error);
@@ -161,7 +161,7 @@ const SelectRolesAndCompany = ({
 
       try {
         const res = await api.get(
-          `/api/companies/roles/${encodeURIComponent(
+          `/companies/roles/${encodeURIComponent(
             companyType
           )}`
         );

@@ -689,7 +689,7 @@ export default function DashboardPage() {
     const fetchDashboard = async () => {
       try {
         const res = await api.get(
-          `${USER_API}/api/users/dashboard`
+          `${USER_API}/users/dashboard`
         );
         setDashboard(res.data);
       } catch (err) {

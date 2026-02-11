@@ -12,6 +12,7 @@ import {
     Send
 } from 'lucide-react';
 import axios from 'axios';
+import { api } from '../lib/api';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import MobileDashboardHeader from '../components/MobileDashboardHeader';
 
@@ -43,9 +44,8 @@ const Tickets = () => {
             const params = {};
             if (filterStatus) params.status = filterStatus;
 
-            const res = await axios.get('/api/tickets/my-tickets', {
+            const res = await api.get('/tickets/my-tickets', {
                 params,
-                withCredentials: true
             });
 
             if (res.data.success) {
@@ -67,9 +67,7 @@ const Tickets = () => {
         }
 
         try {
-            const res = await axios.post('/api/tickets/create', newTicket, {
-                withCredentials: true
-            });
+            const res = await api.post('/tickets/create', newTicket);
 
             if (res.data.success) {
                 setShowCreateModal(false);

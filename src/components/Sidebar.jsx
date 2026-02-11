@@ -190,7 +190,7 @@ const Sidebar = ({ mobileOpen, setMobileOpen }) => {
     const fetchDashboard = async () => {
       try {
         const res = await api.get(
-          "/api/users/dashboard"
+          "/users/dashboard"
         );
 
         setLearningCount(res.data.stats.inProgressCourses);

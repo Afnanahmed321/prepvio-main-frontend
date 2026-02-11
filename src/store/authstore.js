@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import { api } from "../lib/api";
 
-const API_URL = "/api/auth";
+const API_URL = "/auth";
 
 export const useAuthStore = create((set) => ({
     user: null,

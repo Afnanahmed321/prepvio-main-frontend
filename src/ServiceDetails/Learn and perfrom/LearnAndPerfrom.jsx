@@ -79,8 +79,8 @@ function LearnAndPerform() {
     const fetchData = async () => {
       try {
         const [coursesRes, categoriesRes] = await Promise.all([
-          adminApi.get("/api/courses"),
-          adminApi.get("/api/categories")
+          adminApi.get("/courses"),
+          adminApi.get("/categories")
         ]);
 
         // 1. Handle Courses

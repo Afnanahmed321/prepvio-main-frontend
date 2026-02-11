@@ -76,7 +76,7 @@ const Header = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await adminApi.get("/api/courses");
+        const res = await adminApi.get("/courses");
         const data = res.data;
 
         const list = Array.isArray(data)

@@ -601,7 +601,7 @@ export default function VideoPlayer() {
 
     try {
       await api.post(
-        "/users/update-course-total",
+        "users/update-course-total",
         {
           courseId,
           channelId,
@@ -624,7 +624,7 @@ export default function VideoPlayer() {
 
     try {
       await api.post(
-        "/users/video-progress",
+        "users/video-progress",
         {
           videoId: selectedVideoId,
           courseId,
@@ -777,7 +777,7 @@ export default function VideoPlayer() {
     try {
       setIsSaving(true);
       await api.post(
-        "/users/watch-later",
+        "users/watch-later",
         {
           videoId,
           title: selectedVideo.snippet.title,
@@ -835,7 +835,7 @@ export default function VideoPlayer() {
   useEffect(() => {
     const fetchSavedVideos = async () => {
       try {
-        const res = await api.get("/users/watch-later");
+        const res = await api.get("users/watch-later");
         const ids = new Set(res.data.data.map((v) => v.videoId));
         setSavedVideoIds(ids);
       } catch (err) {
@@ -850,7 +850,7 @@ export default function VideoPlayer() {
     const fetchProgress = async () => {
       try {
         const res = await api.get(
-          `/users/video-progress/${courseId}/${channelId}`
+          `users/video-progress/${courseId}/${channelId}`
         );
 
         const map = {};
@@ -870,7 +870,7 @@ export default function VideoPlayer() {
   useEffect(() => {
     const fetchChannelFromBackend = async () => {
       try {
-        const res = await adminApi.get(`/api/channels/course/${courseId}`);
+        const res = await adminApi.get(`/channels/course/${courseId}`);
         const channel = res.data.find((c) => c._id === channelId);
 
         if (!channel) return;
@@ -892,7 +892,7 @@ export default function VideoPlayer() {
     const fetchPlaylists = async () => {
       try {
         setLoading(true);
-        const response = await adminApi.get("/api/playlists", {
+        const response = await adminApi.get("/playlists", {
           params: {
             channelId,
             courseId
@@ -1041,7 +1041,7 @@ export default function VideoPlayer() {
         // ===============================
         try {
           const quizRes = await adminApi.get(
-            `/api/quizzes/by-playlist-document/${selectedPlaylist._id}`
+            `/quizzes/by-playlist-document/${selectedPlaylist._id}`
           );
 
           if (quizRes.data.success) {
