@@ -1,5 +1,5 @@
 // import React, { useState, useEffect } from "react";
-// import axios from "axios";
+// import { api, adminApi } from "../lib/api";
 // import { CheckCircle2, Circle, Loader2, BookOpen, Award } from "lucide-react";
 
 // const CourseCompletion = () => {
@@ -16,13 +16,11 @@
 //         try {
 //             setLoading(true);
 //             // Fetch all courses
-//             const coursesRes = await axios.get("http://localhost:8000/api/courses");
+//             const coursesRes = await adminApi.get("/api/courses");
 //             setCourses(coursesRes.data);
 
 //             // Fetch user's completed courses
-//             const completedRes = await axios.get("http://localhost:5000/api/users/completed-courses", {
-//                 withCredentials: true
-//             });
+//             const completedRes = await api.get("/api/users/completed-courses");
 //             setCompletedCourses(completedRes.data?.completedCourses || []);
 //         } catch (error) {
 //             console.error("Error fetching data:", error);
@@ -41,10 +39,8 @@
 
 //         try {
 //             setActionLoading(courseId);
-//             await axios.post(
-//                 `http://localhost:5000/api/users/complete-course/${courseId}`,
-//                 {},
-//                 { withCredentials: true }
+//             await api.post(
+//                 `/api/users/complete-course/${courseId}`
 //             );
 //             await fetchData();
 //         } catch (error) {

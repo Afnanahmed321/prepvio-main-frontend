@@ -3,6 +3,7 @@ import { Check, ChevronDown, Sparkles, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../../../lib/api.js";
 
 /* ---------------- Selection Button (Updated with matching theme) ---------------- */
 
@@ -142,7 +143,7 @@ const SelectRolesAndCompany = ({
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/companies");
+        const res = await api.get("/api/companies");
         if (Array.isArray(res.data)) setCompanies(res.data);
       } catch (error) {
         console.error("Error fetching companies:", error);
@@ -159,8 +160,8 @@ const SelectRolesAndCompany = ({
       }
 
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/companies/roles/${encodeURIComponent(
+        const res = await api.get(
+          `/api/companies/roles/${encodeURIComponent(
             companyType
           )}`
         );

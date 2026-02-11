@@ -15,7 +15,7 @@ const decodeToken = (token) => {
   }
 };
 
-const socket = io("http://localhost:5000", {
+const socket = io(import.meta.env.VITE_API_URL, {
   transports: ["websocket"],
   autoConnect: false,
   withCredentials: true, // Important for cookies

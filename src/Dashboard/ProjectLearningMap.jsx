@@ -8,6 +8,7 @@ import {
 import axios from "axios";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useAuthStore } from "../store/authstore";
+import { api, adminApi } from "../lib/api";
 import MobileDashboardHeader from "../components/MobileDashboardHeader";
 
 // ==========================================
@@ -789,7 +790,7 @@ export default function ProjectLearningMap() {
     const fetchAllData = useCallback(async () => {
         try {
             // Fetch courses list from Admin Backend
-            const coursesRes = await axios.get("http://localhost:8000/api/courses");
+            const coursesRes = await adminApi.get("/api/courses");
             const coursesData = coursesRes.data;
             setCourses(coursesData);
 
@@ -809,7 +810,7 @@ export default function ProjectLearningMap() {
             }
 
             // Fetch user's completed courses list from User Backend
-            const completedCoursesRes = await axios.get("http://localhost:5000/api/users/completed-courses", { withCredentials: true });
+            const completedCoursesRes = await api.get("/api/users/completed-courses");
             const userCompletedCourses = completedCoursesRes.data?.completedCourses || [];
             setCompletedCourses(userCompletedCourses);
 
@@ -822,11 +823,11 @@ export default function ProjectLearningMap() {
                 setIsCourseCompleted(isCompleted);
 
                 // Fetch projects regardless of completion to get the roadmap count
-                const projectsRes = await axios.get(`http://localhost:8000/api/projects/by-course/${currentSelected._id}`);
+                const projectsRes = await adminApi.get(`/api/projects/by-course/${currentSelected._id}`);
                 const projectsFromServer = projectsRes.data || [];
 
                 // Fetch Submissions to check progress
-                const subRes = await axios.get("http://localhost:5000/api/project-submissions/my-submissions", { withCredentials: true });
+                const subRes = await api.get("/api/project-submissions/my-submissions");
                 const subData = subRes.data?.data || [];
                 setSubmissions(subData);
 
@@ -923,12 +924,12 @@ export default function ProjectLearningMap() {
     const handleSubmission = useCallback(async (data) => {
         if (!selectedProject) return;
         try {
-            await axios.post("http://localhost:5000/api/project-submissions/submit", {
+            await api.post("/api/project-submissions/submit", {
                 projectId: selectedProject._id || selectedProject.id,
                 projectTitle: selectedProject.title,
                 link: data.link,
                 notes: data.notes
-            }, { withCredentials: true });
+            });
 
             setActiveModal(null);
             setSelectedProject(null);

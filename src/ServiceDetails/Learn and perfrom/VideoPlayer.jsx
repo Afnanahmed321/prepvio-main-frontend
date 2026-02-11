@@ -21,6 +21,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import UserAvatar from "../../components/UserAvatar.jsx";
 import { useAuthStore } from "../../store/authstore.js";
+import { api, adminApi } from "../../lib/api.js";
 
 const youtubeaxios = axios.create({
   withCredentials: false,
@@ -29,8 +30,6 @@ const youtubeaxios = axios.create({
 /* ======================================================
    CONFIG
 ====================================================== */
-const BASE_URL = "http://localhost:8000/api";
-const USER_API = "http://localhost:5000/api";
 const YOUTUBE_API_KEY = "AIzaSyBs569PnYQUNFUXon5AMersGFuKS8aS1QQ";
 
 /* ======================================================
@@ -601,14 +600,13 @@ export default function VideoPlayer() {
     if (!courseId || !channelId || totalSeconds <= 0) return;
 
     try {
-      await axios.post(
-        `${USER_API}/users/update-course-total`,
+      await api.post(
+        "/users/update-course-total",
         {
           courseId,
           channelId,
           totalSeconds,
-        },
-        { withCredentials: true }
+        }
       );
     } catch (err) {
       console.error("❌ Failed to update course total", err.response?.data);
@@ -625,16 +623,15 @@ export default function VideoPlayer() {
     if (!duration || duration <= 0) return;
 
     try {
-      await axios.post(
-        `${USER_API}/users/video-progress`,
+      await api.post(
+        "/users/video-progress",
         {
           videoId: selectedVideoId,
           courseId,
           channelId,
           watchedSeconds: seconds,
           durationSeconds: duration,
-        },
-        { withCredentials: true }
+        }
       );
 
       setVideoProgress((prev) => ({
@@ -779,8 +776,8 @@ export default function VideoPlayer() {
 
     try {
       setIsSaving(true);
-      await axios.post(
-        `${USER_API}/users/watch-later`,
+      await api.post(
+        "/users/watch-later",
         {
           videoId,
           title: selectedVideo.snippet.title,
@@ -788,8 +785,7 @@ export default function VideoPlayer() {
           channelId,
           channelName: selectedVideo.snippet.channelTitle,
           courseId,
-        },
-        { withCredentials: true }
+        }
       );
 
       setSavedVideoIds((prev) => new Set(prev).add(videoId));
@@ -839,9 +835,7 @@ export default function VideoPlayer() {
   useEffect(() => {
     const fetchSavedVideos = async () => {
       try {
-        const res = await axios.get(`${USER_API}/users/watch-later`, {
-          withCredentials: true,
-        });
+        const res = await api.get("/users/watch-later");
         const ids = new Set(res.data.data.map((v) => v.videoId));
         setSavedVideoIds(ids);
       } catch (err) {
@@ -855,9 +849,8 @@ export default function VideoPlayer() {
   useEffect(() => {
     const fetchProgress = async () => {
       try {
-        const res = await axios.get(
-          `${USER_API}/users/video-progress/${courseId}/${channelId}`,
-          { withCredentials: true }
+        const res = await api.get(
+          `/users/video-progress/${courseId}/${channelId}`
         );
 
         const map = {};
@@ -877,7 +870,7 @@ export default function VideoPlayer() {
   useEffect(() => {
     const fetchChannelFromBackend = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/channels/course/${courseId}`);
+        const res = await adminApi.get(`/api/channels/course/${courseId}`);
         const channel = res.data.find((c) => c._id === channelId);
 
         if (!channel) return;
@@ -899,7 +892,7 @@ export default function VideoPlayer() {
     const fetchPlaylists = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${BASE_URL}/playlists`, {
+        const response = await adminApi.get("/api/playlists", {
           params: {
             channelId,
             courseId
@@ -1001,8 +994,8 @@ export default function VideoPlayer() {
         // 3️⃣ START LEARNING
         // ===============================
         try {
-          await axios.post(
-            `${USER_API}/users/start-learning`,
+          await api.post(
+            "/users/start-learning",
             {
               courseId,
               courseTitle: selectedPlaylist.courseId?.name || "Unknown Course",
@@ -1010,8 +1003,7 @@ export default function VideoPlayer() {
               channelId,
               channelName: channelInfo.name,
               channelThumbnail: channelInfo.imageUrl || "",
-            },
-            { withCredentials: true }
+            }
           );
 
           console.log("✅ start-learning initialized");
@@ -1048,8 +1040,8 @@ export default function VideoPlayer() {
         // 5️⃣ FETCH QUIZZES
         // ===============================
         try {
-          const quizRes = await axios.get(
-            `${BASE_URL}/quizzes/by-playlist-document/${selectedPlaylist._id}`
+          const quizRes = await adminApi.get(
+            `/api/quizzes/by-playlist-document/${selectedPlaylist._id}`
           );
 
           if (quizRes.data.success) {

@@ -5,6 +5,7 @@ import { Star, Users, Clock, Search, ArrowRight, BookOpen, Code, Database, PenTo
 import { motion, AnimatePresence } from "framer-motion";
 import UserAvatar from "../../components/UserAvatar.jsx";
 import { useAuthStore } from "../../store/authstore.js";
+import { adminApi } from "../../lib/api.js";
 
 
 
@@ -78,8 +79,8 @@ function LearnAndPerform() {
     const fetchData = async () => {
       try {
         const [coursesRes, categoriesRes] = await Promise.all([
-          axios.get("http://localhost:8000/api/courses"),
-          axios.get("http://localhost:8000/api/categories")
+          adminApi.get("/api/courses"),
+          adminApi.get("/api/categories")
         ]);
 
         // 1. Handle Courses

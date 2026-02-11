@@ -5,6 +5,7 @@ import { Columns, List, ExternalLink, PlayCircle, ArrowLeft, Sparkles, Youtube, 
 import { motion, AnimatePresence } from "framer-motion";
 import UserAvatar from "../../components/UserAvatar.jsx";
 import { useAuthStore } from "../../store/authstore.js";
+import { adminApi } from "../../lib/api.js";
 import { useRef } from "react";
 
 
@@ -101,7 +102,7 @@ function Channels() {
         window.scrollTo(0, 0);
         const fetchChannels = async () => {
             try {
-                const res = await axios.get(`http://localhost:8000/api/channels/course/${courseId}`);
+                const res = await adminApi.get(`/api/channels/course/${courseId}`);
                 if (Array.isArray(res.data)) {
                     setChannels(res.data);
                 } else {
@@ -234,8 +235,8 @@ function Channels() {
                                     <button
                                         onClick={() => setIsLandscapeMode(false)}
                                         className={`p-3 rounded-full transition-all duration-300 ${!isLandscapeMode
-                                                ? "bg-white text-black shadow-lg scale-105"
-                                                : "text-gray-400 hover:text-white hover:bg-white/10"
+                                            ? "bg-white text-black shadow-lg scale-105"
+                                            : "text-gray-400 hover:text-white hover:bg-white/10"
                                             }`}
                                     >
                                         <Columns className="w-5 h-5" />
@@ -243,8 +244,8 @@ function Channels() {
                                     <button
                                         onClick={() => setIsLandscapeMode(true)}
                                         className={`p-3 rounded-full transition-all duration-300 ${isLandscapeMode
-                                                ? "bg-white text-black shadow-lg scale-105"
-                                                : "text-gray-400 hover:text-white hover:bg-white/10"
+                                            ? "bg-white text-black shadow-lg scale-105"
+                                            : "text-gray-400 hover:text-white hover:bg-white/10"
                                             }`}
                                     >
                                         <List className="w-5 h-5" />
