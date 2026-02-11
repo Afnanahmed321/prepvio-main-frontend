@@ -22,7 +22,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
 
   const handleGoogleLogin = () => {
-    window.location.href = "/api/auth/google";
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
   };
 
 

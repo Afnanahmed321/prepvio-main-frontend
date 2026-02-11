@@ -1,10 +1,8 @@
 // src/store/authstore.js
 import { create } from "zustand";
-import axios from "axios";
+import { api } from "../lib/api";
 
 const API_URL = "/api/auth";
-
-axios.defaults.withCredentials = true;
 
 export const useAuthStore = create((set) => ({
     user: null,
@@ -17,7 +15,7 @@ export const useAuthStore = create((set) => ({
     signup: async (email, password, name) => {
         set({ isLoading: true, error: null, message: null });
         try {
-            const response = await axios.post(`${API_URL}/signup`, { email, password, name });
+            const response = await api.post(`${API_URL}/signup`, { email, password, name });
             set({
                 user: response.data.user,
                 isAuthenticated: false,  // Not authenticated until verified
@@ -36,7 +34,7 @@ export const useAuthStore = create((set) => ({
     login: async (email, password) => {
         set({ isLoading: true, error: null, message: null });
         try {
-            const response = await axios.post(`${API_URL}/login`, { email, password });
+            const response = await api.post(`${API_URL}/login`, { email, password });
 
             // ❌ Removed Admin Redirect Logic to prevent 5173 -> 5174 auto-redirects
             // The backend should block admins with a 403 error.
@@ -63,7 +61,7 @@ export const useAuthStore = create((set) => ({
     logout: async () => {
         set({ isLoading: true, error: null });
         try {
-            await axios.post(`${API_URL}/logout`);
+            await api.post(`${API_URL}/logout`);
             // ✅ Clear local user session
             localStorage.removeItem("USER_AUTH_TOKEN");
             set({
@@ -81,7 +79,7 @@ export const useAuthStore = create((set) => ({
     verifyEmail: async (code) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/verify-email`, { code });
+            const response = await api.post(`${API_URL}/verify-email`, { code });
             if (response.data.token) {
                 localStorage.setItem("USER_AUTH_TOKEN", response.data.token);
             }
@@ -104,10 +102,7 @@ export const useAuthStore = create((set) => ({
         set({ isCheckingAuth: true, error: null });
 
         try {
-            const response = await axios.get(
-                `${API_URL}/check-auth`,
-                { withCredentials: true }
-            );
+            const response = await api.get(`${API_URL}/check-auth`);
 
             set({
                 user: response.data.user,
@@ -127,9 +122,7 @@ export const useAuthStore = create((set) => ({
 
     refreshUser: async () => {
         try {
-            const response = await axios.get(`${API_URL}/check-auth`, {
-                withCredentials: true,
-            });
+            const response = await api.get(`${API_URL}/check-auth`);
             set({ user: response.data.user });
         } catch (error) {
             console.error("Failed to refresh user:", error);
@@ -140,7 +133,7 @@ export const useAuthStore = create((set) => ({
     forgotPassword: async (email) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/forgot-password`, { email });
+            const response = await api.post(`${API_URL}/forgot-password`, { email });
             set({ message: response.data.message, isLoading: false });
         } catch (error) {
             set({
@@ -154,7 +147,7 @@ export const useAuthStore = create((set) => ({
     resetPassword: async (token, password) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/reset-password/${token}`, { password });
+            const response = await api.post(`${API_URL}/reset-password/${token}`, { password });
             set({ message: response.data.message, isLoading: false });
         } catch (error) {
             set({
