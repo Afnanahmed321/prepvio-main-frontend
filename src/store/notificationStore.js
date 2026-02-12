@@ -10,8 +10,10 @@ export const useNotificationStore = create((set) => ({
   fetchRecentNotifications: async () => {
     try {
       const response = await api.get('/notifications/recent');
+      // Ensure response.data is an array before filtering
+      const data = Array.isArray(response.data) ? response.data : [];
       // Deduplicate fetched data
-      const uniqueData = response.data.filter((n, i, arr) => arr.findIndex(x => x._id === n._id) === i);
+      const uniqueData = data.filter((n, i, arr) => arr.findIndex(x => x._id === n._id) === i);
       set({ recentNotifications: uniqueData });
     } catch (error) {
       console.error('Error fetching recent notifications:', error);
@@ -22,8 +24,10 @@ export const useNotificationStore = create((set) => ({
   fetchNotifications: async () => {
     try {
       const response = await api.get('/notifications');
+      // Ensure response.data is an array before filtering
+      const data = Array.isArray(response.data) ? response.data : [];
       // Deduplicate fetched data
-      const uniqueData = response.data.filter((n, i, arr) => arr.findIndex(x => x._id === n._id) === i);
+      const uniqueData = data.filter((n, i, arr) => arr.findIndex(x => x._id === n._id) === i);
       set({ notifications: uniqueData });
     } catch (error) {
       console.error('Error fetching notifications:', error);

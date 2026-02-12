@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import {api} from '../lib/api.js' 
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import {
   BookOpen,
@@ -16,10 +17,6 @@ import {
 } from 'lucide-react';
 import MobileDashboardHeader from '../components/MobileDashboardHeader';
 
-axios.defaults.withCredentials = true;
-
-const BASE_URL = "/api";
-const USER_API = "/api";
 
 // --- ANIMATION VARIANTS ---
 const containerVariants = {
@@ -47,7 +44,7 @@ const SavedCoursesPage = () => {
   useEffect(() => {
     const fetchSavedCourses = async () => {
       try {
-        const res = await axios.get(`${USER_API}/users/watch-later`);
+        const res = await api.get(`/users/watch-later`);
         setSavedCourses(res.data.data);
       } catch (err) {
         console.error("Failed to fetch saved courses:", err);
@@ -60,7 +57,7 @@ const SavedCoursesPage = () => {
 
   const handleRemoveCourse = async (videoId) => {
     try {
-      await axios.delete(`${USER_API}/users/watch-later/${videoId}`);
+      await api.delete(`/users/watch-later/${videoId}`);
       setSavedCourses((prev) => prev.filter((v) => v.videoId !== videoId));
     } catch {
       alert("Failed to remove video");

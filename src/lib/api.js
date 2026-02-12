@@ -31,3 +31,5 @@ export const adminApi = axios.create({
 // Initialize interceptors
 attachToken(api, "USER_AUTH_TOKEN");
 attachToken(adminApi, "ADMIN_AUTH_TOKEN");
+console.log("PRODUCTION API URL:", import.meta.env.VITE_API_URL);
+

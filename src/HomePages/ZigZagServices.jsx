@@ -27,9 +27,10 @@ const ZigZagServices = () => {
     const fetchServices = async () => {
       try {
         const res = await adminApi.get("/services");
-        setServices(res.data);
+        const data = Array.isArray(res.data) ? res.data : [];
+        setServices(data);
         const initialIndexes = {};
-        res.data.forEach((service, idx) => {
+        data.forEach((service, idx) => {
           initialIndexes[idx] = 0;
         });
         setActiveImageIndex(initialIndexes);
@@ -43,7 +44,8 @@ const ZigZagServices = () => {
   }, []);
 
   useEffect(() => {
-    const intervals = services.map((service, index) => {
+    const servicesToMap = Array.isArray(services) ? services : [];
+    const intervals = servicesToMap.map((service, index) => {
       if (service.images && service.images.length > 1) {
         return setInterval(() => {
           setActiveImageIndex((prev) => ({
