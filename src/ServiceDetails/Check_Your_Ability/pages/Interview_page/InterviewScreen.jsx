@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { PhoneOff, MessageSquare, Code, Maximize, Minimize, X, Mic, ListChecks, Play, Code2, Terminal, CheckCircle2, XCircle, ArrowRight, TrendingUp, Activity, AlertCircle, Users, Briefcase } from "lucide-react";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -865,8 +867,6 @@ const InterviewScreen = ({
   const recognitionRef = useRef(null);
   const captureCanvasRef = useRef(null);
   const speechBufferRef = useRef("");
-  const mediaStreamRef = useRef(null);
-
   const location = useLocation();
   const highlightBufferRef = useRef([]);
   const [showEndInterviewModal, setShowEndInterviewModal] = useState(false);
@@ -1038,11 +1038,10 @@ const InterviewScreen = ({
   const endInterview = useCallback(() => {
     console.log("Interview ended and resources cleaned.");
     if (window.speechSynthesis) window.speechSynthesis.cancel();
-    if (mediaStreamRef.current) {
-  mediaStreamRef.current.getTracks().forEach(track => track.stop());
-  mediaStreamRef.current = null;
-}
-
+    if (window.currentMediaStream) {
+      window.currentMediaStream.getTracks().forEach(track => track.stop());
+      window.currentMediaStream = null;
+    }
     if (userVideoRef.current?.srcObject) {
       userVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
       userVideoRef.current.srcObject = null;
@@ -1087,8 +1086,6 @@ const InterviewScreen = ({
   // ✅ OPTIMIZED NERVOUSNESS DETECTION - Re-enabled with performance optimizations
   useEffect(() => {
     const sessionId = location.state?.sessionId;
-    if (!cameraAllowed) return;
-
 
     if (!sessionId) {
       console.warn("⚠️ No sessionId found - nervousness detection disabled");
@@ -1181,6 +1178,7 @@ const InterviewScreen = ({
                 }),
                 signal: controller.signal
               });
+
               clearTimeout(timeoutId);
 
               if (!res.ok) {
@@ -1239,7 +1237,7 @@ const InterviewScreen = ({
         body: JSON.stringify({ sessionId })
       }).catch(err => console.error("Cleanup failed:", err));
     };
-  }, [location.state?.sessionId, currentQuestionIndex, currentQuestionText, cameraAllowed]);
+  }, [location.state?.sessionId, currentQuestionIndex, currentQuestionText]);
 
   useEffect(() => {
     window.history.pushState(null, "", window.location.pathname);
@@ -1260,11 +1258,10 @@ const InterviewScreen = ({
         userVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
         userVideoRef.current.srcObject = null;
       }
-      if (mediaStreamRef.current) {
-  mediaStreamRef.current.getTracks().forEach(track => track.stop());
-  mediaStreamRef.current = null;
-}
-
+      if (window.currentMediaStream) {
+        window.currentMediaStream.getTracks().forEach(track => track.stop());
+        window.currentMediaStream = null;
+      }
 
       navigate("/", { replace: true });
     };
@@ -2016,86 +2013,38 @@ In the meantime, if you have any follow-up questions, please don't hesitate to r
     location,
   ]);
 
-  // useEffect(() => {
-  //   if (isPreview) return;
+  useEffect(() => {
+    if (isPreview) return;
 
-  //   const startCamera = async () => {
-  //     try {
-  //       const stream = await navigator.mediaDevices.getUserMedia({
-  //         video: {
-  //           // ✅ Balanced resolution - good quality without overloading GPU
-  //           width: { ideal: 480 },
-  //           height: { ideal: 360 },
-  //           frameRate: { ideal: 30, max: 30 },
-  //           facingMode: "user"
-  //         },
-  //         audio: true,
-  //       });
+    const startCamera = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            // ✅ Balanced resolution - good quality without overloading GPU
+            width: { ideal: 480 },
+            height: { ideal: 360 },
+            frameRate: { ideal: 30, max: 30 },
+            facingMode: "user"
+          },
+          audio: true,
+        });
 
-  //       window.currentMediaStream = stream;
-  //       setCameraAllowed(true);
+        window.currentMediaStream = stream;
+        setCameraAllowed(true);
 
-  //       // ✅ Set video element immediately
-  //       if (userVideoRef.current) {
-  //         userVideoRef.current.srcObject = stream;
-  //         const settings = stream.getVideoTracks()[0].getSettings();
-  //         console.log("📹 Video initialized:", `${settings.width}x${settings.height} @ ${settings.frameRate}fps`);
-  //       }
-  //     } catch (err) {
-  //       setError("Camera/Mic access denied.");
-  //     }
-  //   };
+        // ✅ Set video element immediately
+        if (userVideoRef.current) {
+          userVideoRef.current.srcObject = stream;
+          const settings = stream.getVideoTracks()[0].getSettings();
+          console.log("📹 Video initialized:", `${settings.width}x${settings.height} @ ${settings.frameRate}fps`);
+        }
+      } catch (err) {
+        setError("Camera/Mic access denied.");
+      }
+    };
 
-  //   startCamera();
-  // }, [isPreview]);
-
-  const startCamera = useCallback(async () => {
-  try {
-    console.log("Tracks:", stream.getTracks());
-console.log("Video tracks:", stream.getVideoTracks());
-
-    console.log("Protocol:", window.location.protocol);
-    console.log("🎥 Starting camera...");
-
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        width: { ideal: 480 },
-        height: { ideal: 360 },
-        frameRate: { ideal: 30, max: 30 },
-        facingMode: "user"
-      },
-      audio: true,
-    });
-
-    // window.currentMediaStream = stream;
-    mediaStreamRef.current = stream;
-
-
-    if (userVideoRef.current) {
-  userVideoRef.current.srcObject = stream;
-
-  // Force video to render in production (important for Vercel)
-  try {
-    await userVideoRef.current.play();
-    console.log("Video width:", userVideoRef.current.videoWidth);
-console.log("Video height:", userVideoRef.current.videoHeight);
-
-  } catch (err) {
-    console.error("Video play error:", err);
-  }
-}
-
-
-    setCameraAllowed(true);
-
-    console.log("✅ Camera started successfully");
-
-  } catch (err) {
-    console.error("❌ Camera error:", err);
-    setError("Camera error: " + err.message);
-  }
-}, []);
-
+    startCamera();
+  }, [isPreview]);
 
   useEffect(() => {
     if (cameraAllowed && companyType && role && !greeted) {
@@ -2147,27 +2096,16 @@ Key points:
     }
   }, [cameraAllowed, companyType, role, greeted, fetchFireworksContent, textToSpeech]);
 
- if (!cameraAllowed && !error) {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
-      <div className="text-center">
-        <button
-          onClick={startCamera}
-          className="px-6 py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800"
-        >
-          Start Interview
-        </button>
-        <p className="mt-4 text-gray-600">
-          Click to allow camera & microphone access
-        </p>
+  if (!cameraAllowed && !error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-gray-300 border-t-[#1A1A1A] rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-lg font-medium text-gray-700">Requesting camera and microphone permission...</p>
+        </div>
       </div>
-    </div>
-  );
-}
-
-
-
-  
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FDFBF9] p-4 md:p-6 font-sans overflow-x-hidden relative">
@@ -2239,12 +2177,12 @@ Key points:
                   playsInline
                   muted
                   className="w-full h-[480px] object-cover"
-                  // style={{
-                  //   transform: 'scaleX(-1) translateZ(0)',
-                  //   backfaceVisibility: 'hidden',
-                  //   WebkitBackfaceVisibility: 'hidden',
-                  //   imageRendering: 'auto',
-                  // }}
+                  style={{
+                    transform: 'scaleX(-1) translateZ(0)',
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                    imageRendering: 'auto',
+                  }}
                 />
               )}
 
