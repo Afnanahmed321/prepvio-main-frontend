@@ -2188,19 +2188,42 @@ Key points:
                   <p className="text-gray-400">Video disabled in preview</p>
                 </div>
               ) : (
-                <video
-                  ref={handleVideoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-[480px] object-cover"
-                  style={{
-                    transform: 'scaleX(-1) translateZ(0)',
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                    imageRendering: 'auto',
-                  }}
-                />
+                <>
+                  <video
+                    ref={handleVideoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-[480px] object-cover"
+                    style={{
+                      transform: 'scaleX(-1) translateZ(0)',
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
+                      imageRendering: 'auto',
+                    }}
+                  />
+                  <div className="absolute top-2 left-2 bg-black/70 text-[10px] text-white p-2 z-[9999] pointer-events-auto font-mono whitespace-pre rounded border border-red-500/50">
+                    <div className="font-bold text-red-400 mb-1">DEBUG_V1</div>
+                    <div>CamAllowed: {String(cameraAllowed)}</div>
+                    <div>Stream: {window.currentMediaStream ? (window.currentMediaStream.active ? "ACTIVE" : "INACTIVE") : "NULL"}</div>
+                    <div>VideoRef: {userVideoRef.current ? "OK" : "NULL"}</div>
+                    <div>ReadyState: {userVideoRef.current?.readyState}</div>
+                    <button
+                      onClick={() => {
+                        const v = userVideoRef.current;
+                        if (v && window.currentMediaStream) {
+                          v.srcObject = window.currentMediaStream;
+                          v.play().catch(e => alert(e.message));
+                        } else {
+                          alert("No Stream/Ref");
+                        }
+                      }}
+                      className="mt-2 bg-red-600 text-white px-2 py-1 rounded w-full"
+                    >
+                      FORCE START
+                    </button>
+                  </div>
+                </>
               )}
 
               {/* AI Speaking Indicator */}
