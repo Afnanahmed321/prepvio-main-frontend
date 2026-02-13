@@ -1,4 +1,4 @@
-// src/store/authstore.js
+// // src/store/authstore.js
 import { create } from "zustand";
 import { api } from "../lib/api";
 
@@ -158,5 +158,43 @@ export const useAuthStore = create((set) => ({
         }
     },
 
-    clearMessage: () => set({ message: null, error: null }),
+    // Line 161 (existing)
+clearMessage: () => set({ message: null, error: null }),
+
+// Line 162 (NEW - blank line)
+
+// Lines 163-193 (NEW - handleOAuthCallback method)
+handleOAuthCallback: async (token) => {
+    set({ isLoading: true, error: null });
+    try {
+        // Store token in localStorage
+        if (token) {
+            localStorage.setItem("USER_AUTH_TOKEN", token);
+        }
+
+        // Validate token and fetch user data
+        const response = await api.get(`${API_URL}/check-auth`);
+
+        set({
+            user: response.data.user,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+        });
+
+        return response.data.user;
+    } catch (error) {
+        // Clear invalid token
+        localStorage.removeItem("USER_AUTH_TOKEN");
+        set({
+            error: error.response?.data?.message || "OAuth authentication failed",
+            isLoading: false,
+            isAuthenticated: false,
+            user: null,
+        });
+        throw error;
+    }
+},
+
+
 }));
