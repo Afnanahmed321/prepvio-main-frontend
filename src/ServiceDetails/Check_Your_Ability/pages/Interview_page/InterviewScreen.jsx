@@ -876,6 +876,8 @@ const InterviewScreen = ({
   const [currentQuestionText, setCurrentQuestionText] = useState("");
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [cameraAllowed, setCameraAllowed] = useState(false);
+  const [mediaStream, setMediaStream] = useState(null);
+
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
@@ -2026,25 +2028,8 @@ In the meantime, if you have any follow-up questions, please don't hesitate to r
         audio: true,
       });
 
-      window.currentMediaStream = stream;
+      setMediaStream(stream);   // ✅ store stream in state
       setCameraAllowed(true);
-
-      // ⬇️ IMPORTANT: wait until video ref exists
-      const attachStream = () => {
-        if (userVideoRef.current) {
-          userVideoRef.current.srcObject = stream;
-          userVideoRef.current.onloadedmetadata = () => {
-            userVideoRef.current.play().catch(err =>
-              console.error("Video play failed:", err)
-            );
-          };
-        } else {
-          // Retry on next frame if ref not ready
-          requestAnimationFrame(attachStream);
-        }
-      };
-
-      attachStream();
 
     } catch (err) {
       console.error("Camera error:", err);
@@ -2054,6 +2039,22 @@ In the meantime, if you have any follow-up questions, please don't hesitate to r
 
   startCamera();
 }, [isPreview]);
+
+useEffect(() => {
+  if (!mediaStream) return;
+  if (!userVideoRef.current) return;
+
+  userVideoRef.current.srcObject = mediaStream;
+
+  userVideoRef.current.onloadedmetadata = () => {
+    userVideoRef.current.play().catch(err =>
+      console.error("Video play failed:", err)
+    );
+  };
+
+}, [mediaStream]);
+
+
 
 
   useEffect(() => {
