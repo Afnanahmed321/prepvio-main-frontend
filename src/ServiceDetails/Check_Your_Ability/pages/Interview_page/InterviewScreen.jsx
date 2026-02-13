@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { PhoneOff, MessageSquare, Code, Maximize, Minimize, X, Mic, ListChecks, Play, Code2, Terminal, CheckCircle2, XCircle, ArrowRight, TrendingUp, Activity, AlertCircle, Users, Briefcase } from "lucide-react";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -867,6 +865,8 @@ const InterviewScreen = ({
   const recognitionRef = useRef(null);
   const captureCanvasRef = useRef(null);
   const speechBufferRef = useRef("");
+  const mediaStreamRef = useRef(null);
+
   const location = useLocation();
   const highlightBufferRef = useRef([]);
   const [showEndInterviewModal, setShowEndInterviewModal] = useState(false);
@@ -1038,10 +1038,11 @@ const InterviewScreen = ({
   const endInterview = useCallback(() => {
     console.log("Interview ended and resources cleaned.");
     if (window.speechSynthesis) window.speechSynthesis.cancel();
-    if (window.currentMediaStream) {
-      window.currentMediaStream.getTracks().forEach(track => track.stop());
-      window.currentMediaStream = null;
-    }
+    if (mediaStreamRef.current) {
+  mediaStreamRef.current.getTracks().forEach(track => track.stop());
+  mediaStreamRef.current = null;
+}
+
     if (userVideoRef.current?.srcObject) {
       userVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
       userVideoRef.current.srcObject = null;
@@ -1259,10 +1260,11 @@ const InterviewScreen = ({
         userVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
         userVideoRef.current.srcObject = null;
       }
-      if (window.currentMediaStream) {
-        window.currentMediaStream.getTracks().forEach(track => track.stop());
-        window.currentMediaStream = null;
-      }
+      if (mediaStreamRef.current) {
+  mediaStreamRef.current.getTracks().forEach(track => track.stop());
+  mediaStreamRef.current = null;
+}
+
 
       navigate("/", { replace: true });
     };
@@ -2049,6 +2051,7 @@ In the meantime, if you have any follow-up questions, please don't hesitate to r
 
   const startCamera = useCallback(async () => {
   try {
+    console.log("Protocol:", window.location.protocol);
     console.log("🎥 Starting camera...");
 
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -2061,11 +2064,21 @@ In the meantime, if you have any follow-up questions, please don't hesitate to r
       audio: true,
     });
 
-    window.currentMediaStream = stream;
+    // window.currentMediaStream = stream;
+    mediaStreamRef.current = stream;
+
 
     if (userVideoRef.current) {
-      userVideoRef.current.srcObject = stream;
-    }
+  userVideoRef.current.srcObject = stream;
+
+  // Force video to render in production (important for Vercel)
+  try {
+    await userVideoRef.current.play();
+  } catch (err) {
+    console.error("Video play error:", err);
+  }
+}
+
 
     setCameraAllowed(true);
 
