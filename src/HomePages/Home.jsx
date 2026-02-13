@@ -1113,6 +1113,28 @@ const Hero = () => {
 
 // ✅ MAIN HOME COMPONENT
 const Home = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { checkAuth } = useAuthStore();
+  // ✅ Handle OAuth callback if token is in URL
+  useEffect(() => {
+    const handleOAuthToken = async () => {
+      const tokenFromUrl = searchParams.get("token");
+      
+      if (tokenFromUrl) {
+        try {
+          localStorage.setItem("USER_AUTH_TOKEN", tokenFromUrl);
+          window.history.replaceState({}, document.title, "/");
+          await checkAuth();
+          navigate("/dashboard", { replace: true });
+        } catch (error) {
+          console.error("OAuth token handling error:", error);
+          localStorage.removeItem("USER_AUTH_TOKEN");
+        }
+      }
+    };
+    handleOAuthToken();
+  }, [searchParams, navigate, checkAuth]);
   return (
     <div className="min-h-screen bg-[#FDFBF9] p-3 md:p-6 font-sans selection:bg-[#D4F478] selection:text-black overflow-x-hidden relative">
       {/* Background */}
