@@ -54,6 +54,7 @@ import LoadingSpinner from "./components/LoadingSpinner.jsx";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authstore.js";
 
+import OAuthCallback from "./pages/OAuthCallback.jsx";
 /* ======================================================
    PROTECTED ROUTE (AUTH + VERIFIED)
 ====================================================== */
@@ -209,6 +210,8 @@ function App() {
 				<Route path="/verify-email" element={<EmailVerificationPage />} />
 				<Route path="/forgot-password" element={<ForgotPasswordPage />} />
 				<Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+				<Route path="/auth/callback" element={<OAuthCallback />} />
+				
 
 				{/* Services */}
 				<Route path="/services/learn--perform" element={<LearnAndPerform />} />
