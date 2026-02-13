@@ -1168,7 +1168,7 @@ const InterviewScreen = ({
             const timeoutId = setTimeout(() => controller.abort(), 5000);
 
             try {
-              const res = await fetch("http://127.0.0.1:5050/analyze-frame", {
+              const res = await fetch("https://prepvio-facialexpression-hmaub9hehabcheek.centralindia-01.azurewebsites.net/analyze-frame", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -1231,7 +1231,7 @@ const InterviewScreen = ({
       clearInterval(interval);
       console.log(`📹 Detection stopped. Stats: ${successCount}/${frameCount} analyzed`);
 
-      fetch("http://127.0.0.1:5050/cleanup-session", {
+      fetch("https://prepvio-facialexpression-hmaub9hehabcheek.centralindia-01.azurewebsites.net/cleanup-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId })
