@@ -2034,10 +2034,18 @@ In the meantime, if you have any follow-up questions, please don't hesitate to r
 
         // ✅ Set video element immediately
         if (userVideoRef.current) {
-          userVideoRef.current.srcObject = stream;
-          const settings = stream.getVideoTracks()[0].getSettings();
-          console.log("📹 Video initialized:", `${settings.width}x${settings.height} @ ${settings.frameRate}fps`);
-        }
+  userVideoRef.current.srcObject = stream;
+
+  userVideoRef.current.onloadedmetadata = () => {
+    userVideoRef.current.play().catch((err) => {
+      console.error("❌ Video play failed:", err);
+    });
+  };
+
+  const settings = stream.getVideoTracks()[0].getSettings();
+  console.log("📹 Video initialized:", `${settings.width}x${settings.height} @ ${settings.frameRate}fps`);
+}
+
       } catch (err) {
         setError("Camera/Mic access denied.");
       }
