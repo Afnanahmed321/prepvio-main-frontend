@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { PhoneOff, MessageSquare, Code, Maximize, Minimize, X, Mic, ListChecks, Play, Code2, Terminal, CheckCircle2, XCircle, ArrowRight, TrendingUp, Activity, AlertCircle, Users, Briefcase } from "lucide-react";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -1082,160 +1084,160 @@ const InterviewScreen = ({
   }, [isPreview, previewSession]);
 
   // ✅ OPTIMIZED NERVOUSNESS DETECTION - Re-enabled with performance optimizations
-  useEffect(() => {
-    const sessionId = location.state?.sessionId;
+  // useEffect(() => {
+  //   const sessionId = location.state?.sessionId;
 
-    if (!sessionId) {
-      console.warn("⚠️ No sessionId found - nervousness detection disabled");
-      return;
-    }
+  //   if (!sessionId) {
+  //     console.warn("⚠️ No sessionId found - nervousness detection disabled");
+  //     return;
+  //   }
 
-    console.log("📹 Starting OPTIMIZED nervousness detection for session:", sessionId);
+  //   console.log("📹 Starting OPTIMIZED nervousness detection for session:", sessionId);
 
-    let frameCount = 0;
-    let successCount = 0;
-    let errorCount = 0;
-    let isProcessing = false;
+  //   let frameCount = 0;
+  //   let successCount = 0;
+  //   let errorCount = 0;
+  //   let isProcessing = false;
 
-    // ✅ Use very small resolution for nervousness detection (80x60)
-    let offscreenCanvas;
-    let offscreenCtx;
+  //   // ✅ Use very small resolution for nervousness detection (80x60)
+  //   let offscreenCanvas;
+  //   let offscreenCtx;
 
-    if (typeof OffscreenCanvas !== 'undefined') {
-      offscreenCanvas = new OffscreenCanvas(320, 240);
-      offscreenCtx = offscreenCanvas.getContext('2d', {
-        willReadFrequently: false,
-        desynchronized: true,
-        alpha: false
-      });
-    } else {
-      offscreenCanvas = document.createElement('canvas');
-      offscreenCanvas.width = 320;
-      offscreenCanvas.height = 240;
-      offscreenCtx = offscreenCanvas.getContext('2d', {
-        willReadFrequently: false,
-        desynchronized: true,
-        alpha: false
-      });
-    }
+  //   if (typeof OffscreenCanvas !== 'undefined') {
+  //     offscreenCanvas = new OffscreenCanvas(320, 240);
+  //     offscreenCtx = offscreenCanvas.getContext('2d', {
+  //       willReadFrequently: false,
+  //       desynchronized: true,
+  //       alpha: false
+  //     });
+  //   } else {
+  //     offscreenCanvas = document.createElement('canvas');
+  //     offscreenCanvas.width = 320;
+  //     offscreenCanvas.height = 240;
+  //     offscreenCtx = offscreenCanvas.getContext('2d', {
+  //       willReadFrequently: false,
+  //       desynchronized: true,
+  //       alpha: false
+  //     });
+  //   }
 
-    const interval = setInterval(() => {
-      if (isProcessing) {
-        console.log("⏭️ Skipping frame - still processing");
-        return;
-      }
+  //   const interval = setInterval(() => {
+  //     if (isProcessing) {
+  //       console.log("⏭️ Skipping frame - still processing");
+  //       return;
+  //     }
 
-      const video = userVideoRef.current;
-      if (!video || video.readyState < 2 || video.videoWidth === 0 || video.videoHeight === 0) {
-        return;
-      }
+  //     const video = userVideoRef.current;
+  //     if (!video || video.readyState < 2 || video.videoWidth === 0 || video.videoHeight === 0) {
+  //       return;
+  //     }
 
-      frameCount++;
-      isProcessing = true;
+  //     frameCount++;
+  //     isProcessing = true;
 
-      const processFrame = () => {
-        try {
-          // Draw proper resolution for nervousness detection
-          offscreenCtx.drawImage(video, 0, 0, 320, 240);
+  //     const processFrame = () => {
+  //       try {
+  //         // Draw proper resolution for nervousness detection
+  //         offscreenCtx.drawImage(video, 0, 0, 320, 240);
 
-          const blobPromise = offscreenCanvas.convertToBlob ?
-            offscreenCanvas.convertToBlob({ type: 'image/jpeg', quality: 0.4 }) :
-            new Promise(resolve => offscreenCanvas.toBlob(resolve, 'image/jpeg', 0.4));
+  //         const blobPromise = offscreenCanvas.convertToBlob ?
+  //           offscreenCanvas.convertToBlob({ type: 'image/jpeg', quality: 0.4 }) :
+  //           new Promise(resolve => offscreenCanvas.toBlob(resolve, 'image/jpeg', 0.4));
 
-          blobPromise.then(processBlob).catch(err => {
-            console.error("Blob creation error:", err);
-            isProcessing = false;
-          });
-        } catch (err) {
-          console.error("Frame capture error:", err);
-          isProcessing = false;
-        }
-      };
+  //         blobPromise.then(processBlob).catch(err => {
+  //           console.error("Blob creation error:", err);
+  //           isProcessing = false;
+  //         });
+  //       } catch (err) {
+  //         console.error("Frame capture error:", err);
+  //         isProcessing = false;
+  //       }
+  //     };
 
-      const processBlob = async (blob) => {
-        if (!blob) {
-          isProcessing = false;
-          return;
-        }
+  //     const processBlob = async (blob) => {
+  //       if (!blob) {
+  //         isProcessing = false;
+  //         return;
+  //       }
 
-        try {
-          const reader = new FileReader();
-          reader.onloadend = async () => {
-            const base64data = reader.result.split(',')[1];
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000);
+  //       try {
+  //         const reader = new FileReader();
+  //         reader.onloadend = async () => {
+  //           const base64data = reader.result.split(',')[1];
+  //           const controller = new AbortController();
+  //           const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-            try {
-              const res = await fetch("https://prepvio-facialexpression-hmaub9hehabcheek.centralindia-01.azurewebsites.net/analyze-frame", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  sessionId: sessionId,
-                  frame: base64data,
-                  questionIndex: currentQuestionIndex
-                }),
-                signal: controller.signal
-              });
+  //           try {
+  //             const res = await fetch("https://prepvio-facialexpression-hmaub9hehabcheek.centralindia-01.azurewebsites.net/analyze-frame", {
+  //               method: "POST",
+  //               headers: { "Content-Type": "application/json" },
+  //               body: JSON.stringify({
+  //                 sessionId: sessionId,
+  //                 frame: base64data,
+  //                 questionIndex: currentQuestionIndex
+  //               }),
+  //               signal: controller.signal
+  //             });
 
-              clearTimeout(timeoutId);
+  //             clearTimeout(timeoutId);
 
-              if (!res.ok) {
-                throw new Error(`HTTP ${res.status}`);
-              }
+  //             if (!res.ok) {
+  //               throw new Error(`HTTP ${res.status}`);
+  //             }
 
-              const data = await res.json();
-              successCount++;
+  //             const data = await res.json();
+  //             successCount++;
 
-              if (data.nervous && data.imageUrl) {
-                highlightBufferRef.current.push({
-                  questionIndex: currentQuestionIndex,
-                  questionText: currentQuestionText,
-                  nervousScore: data.score,
-                  confidence: data.confidence,
-                  imageUrl: data.imageUrl,
-                  timestamp: new Date().toLocaleTimeString(),
-                  capturedAt: new Date(),
-                });
+  //             if (data.nervous && data.imageUrl) {
+  //               highlightBufferRef.current.push({
+  //                 questionIndex: currentQuestionIndex,
+  //                 questionText: currentQuestionText,
+  //                 nervousScore: data.score,
+  //                 confidence: data.confidence,
+  //                 imageUrl: data.imageUrl,
+  //                 timestamp: new Date().toLocaleTimeString(),
+  //                 capturedAt: new Date(),
+  //               });
 
-                console.log(`🟡 Nervous moment detected Q${currentQuestionIndex}`);
-              }
-            } catch (err) {
-              clearTimeout(timeoutId);
-              errorCount++;
-              if (err.name !== 'AbortError') {
-                console.error(`❌ Frame ${frameCount} analysis failed`);
-              }
-            } finally {
-              isProcessing = false;
-            }
-          };
+  //               console.log(`🟡 Nervous moment detected Q${currentQuestionIndex}`);
+  //             }
+  //           } catch (err) {
+  //             clearTimeout(timeoutId);
+  //             errorCount++;
+  //             if (err.name !== 'AbortError') {
+  //               console.error(`❌ Frame ${frameCount} analysis failed`);
+  //             }
+  //           } finally {
+  //             isProcessing = false;
+  //           }
+  //         };
 
-          reader.readAsDataURL(blob);
-        } catch (err) {
-          console.error("Blob processing error:", err);
-          isProcessing = false;
-        }
-      };
+  //         reader.readAsDataURL(blob);
+  //       } catch (err) {
+  //         console.error("Blob processing error:", err);
+  //         isProcessing = false;
+  //       }
+  //     };
 
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(processFrame, { timeout: 2000 });
-      } else {
-        setTimeout(processFrame, 0);
-      }
+  //     if ('requestIdleCallback' in window) {
+  //       requestIdleCallback(processFrame, { timeout: 2000 });
+  //     } else {
+  //       setTimeout(processFrame, 0);
+  //     }
 
-    }, 1000); // ✅ 1 second - ultra fast for verification
+  //   }, 1000); // ✅ 1 second - ultra fast for verification
 
-    return () => {
-      clearInterval(interval);
-      console.log(`📹 Detection stopped. Stats: ${successCount}/${frameCount} analyzed`);
+  //   return () => {
+  //     clearInterval(interval);
+  //     console.log(`📹 Detection stopped. Stats: ${successCount}/${frameCount} analyzed`);
 
-      fetch("https://prepvio-facialexpression-hmaub9hehabcheek.centralindia-01.azurewebsites.net/cleanup-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId })
-      }).catch(err => console.error("Cleanup failed:", err));
-    };
-  }, [location.state?.sessionId, currentQuestionIndex, currentQuestionText]);
+  //     fetch("https://prepvio-facialexpression-hmaub9hehabcheek.centralindia-01.azurewebsites.net/cleanup-session", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ sessionId })
+  //     }).catch(err => console.error("Cleanup failed:", err));
+  //   };
+  // }, [location.state?.sessionId, currentQuestionIndex, currentQuestionText]);
 
   useEffect(() => {
     window.history.pushState(null, "", window.location.pathname);
