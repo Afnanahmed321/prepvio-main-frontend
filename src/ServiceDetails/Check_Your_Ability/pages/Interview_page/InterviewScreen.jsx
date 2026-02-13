@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { PhoneOff, MessageSquare, Code, Maximize, Minimize, X, Mic, ListChecks, Play, Code2, Terminal, CheckCircle2, XCircle, ArrowRight, TrendingUp, Activity, AlertCircle, Users, Briefcase } from "lucide-react";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -2123,7 +2121,16 @@ Key points:
         <div className="absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-gradient-to-t from-pink-50 to-transparent rounded-full blur-[120px] opacity-60" />
       </div>
 
-     
+     <div className="flex justify-center mt-6">
+  <video
+    ref={userVideoRef}
+    autoPlay
+    playsInline
+    muted
+    className="w-[400px] h-[300px] bg-black rounded-xl object-cover"
+  />
+</div>
+
 
       {/* Modals */}
       {isCodeEditorOpen && (
