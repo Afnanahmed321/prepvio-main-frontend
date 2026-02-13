@@ -6,7 +6,7 @@ import axios from "axios";
 import { api } from "../lib/api";
 import AuthModal from "../components/AuthModal"; // Add this line
 import MobileRestrictionModal from "../components/MobileRestrictionModal"; // ✅ ADD THIS
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
   ArrowRight,
