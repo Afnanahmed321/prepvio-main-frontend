@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { PhoneOff, MessageSquare, Code, Maximize, Minimize, X, Mic, ListChecks, Play, Code2, Terminal, CheckCircle2, XCircle, ArrowRight, TrendingUp, Activity, AlertCircle, Users, Briefcase } from "lucide-react";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -2185,12 +2183,12 @@ Key points:
                   playsInline
                   muted
                   className="w-full h-[480px] object-cover"
-                  style={{
-                    transform: 'scaleX(-1) translateZ(0)',
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                    imageRendering: 'auto',
-                  }}
+                  // style={{
+                  //   transform: 'scaleX(-1) translateZ(0)',
+                  //   backfaceVisibility: 'hidden',
+                  //   WebkitBackfaceVisibility: 'hidden',
+                  //   imageRendering: 'auto',
+                  // }}
                 />
               )}
 
