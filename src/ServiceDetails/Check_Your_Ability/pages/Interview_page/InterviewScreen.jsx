@@ -2012,45 +2012,49 @@ In the meantime, if you have any follow-up questions, please don't hesitate to r
   ]);
 
   useEffect(() => {
-    if (isPreview) return;
+  if (isPreview) return;
 
-    const startCamera = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            // ✅ Balanced resolution - good quality without overloading GPU
-            width: { ideal: 480 },
-            height: { ideal: 360 },
-            frameRate: { ideal: 30, max: 30 },
-            facingMode: "user"
-          },
-          audio: true,
-        });
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 480 },
+          height: { ideal: 360 },
+          frameRate: { ideal: 30, max: 30 },
+          facingMode: "user"
+        },
+        audio: true,
+      });
 
-        window.currentMediaStream = stream;
-        setCameraAllowed(true);
+      window.currentMediaStream = stream;
+      setCameraAllowed(true);
 
-        // ✅ Set video element immediately
+      // ⬇️ IMPORTANT: wait until video ref exists
+      const attachStream = () => {
         if (userVideoRef.current) {
-  userVideoRef.current.srcObject = stream;
+          userVideoRef.current.srcObject = stream;
+          userVideoRef.current.onloadedmetadata = () => {
+            userVideoRef.current.play().catch(err =>
+              console.error("Video play failed:", err)
+            );
+          };
+        } else {
+          // Retry on next frame if ref not ready
+          requestAnimationFrame(attachStream);
+        }
+      };
 
-  userVideoRef.current.onloadedmetadata = () => {
-    userVideoRef.current.play().catch((err) => {
-      console.error("❌ Video play failed:", err);
-    });
+      attachStream();
+
+    } catch (err) {
+      console.error("Camera error:", err);
+      setError("Camera/Mic access denied.");
+    }
   };
 
-  const settings = stream.getVideoTracks()[0].getSettings();
-  console.log("📹 Video initialized:", `${settings.width}x${settings.height} @ ${settings.frameRate}fps`);
-}
+  startCamera();
+}, [isPreview]);
 
-      } catch (err) {
-        setError("Camera/Mic access denied.");
-      }
-    };
-
-    startCamera();
-  }, [isPreview]);
 
   useEffect(() => {
     if (cameraAllowed && companyType && role && !greeted) {
