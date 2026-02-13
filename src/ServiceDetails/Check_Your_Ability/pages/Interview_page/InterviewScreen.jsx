@@ -2051,6 +2051,9 @@ In the meantime, if you have any follow-up questions, please don't hesitate to r
 
   const startCamera = useCallback(async () => {
   try {
+    console.log("Tracks:", stream.getTracks());
+console.log("Video tracks:", stream.getVideoTracks());
+
     console.log("Protocol:", window.location.protocol);
     console.log("🎥 Starting camera...");
 
@@ -2074,6 +2077,9 @@ In the meantime, if you have any follow-up questions, please don't hesitate to r
   // Force video to render in production (important for Vercel)
   try {
     await userVideoRef.current.play();
+    console.log("Video width:", userVideoRef.current.videoWidth);
+console.log("Video height:", userVideoRef.current.videoHeight);
+
   } catch (err) {
     console.error("Video play error:", err);
   }
@@ -2233,12 +2239,12 @@ Key points:
                   playsInline
                   muted
                   className="w-full h-[480px] object-cover"
-                  style={{
-                    transform: 'scaleX(-1) translateZ(0)',
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                    imageRendering: 'auto',
-                  }}
+                  // style={{
+                  //   transform: 'scaleX(-1) translateZ(0)',
+                  //   backfaceVisibility: 'hidden',
+                  //   WebkitBackfaceVisibility: 'hidden',
+                  //   imageRendering: 'auto',
+                  // }}
                 />
               )}
 
