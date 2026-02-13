@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { PhoneOff, MessageSquare, Code, Maximize, Minimize, X, Mic, ListChecks, Play, Code2, Terminal, CheckCircle2, XCircle, ArrowRight, TrendingUp, Activity, AlertCircle, Users, Briefcase } from "lucide-react";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -2055,6 +2053,15 @@ In the meantime, if you have any follow-up questions, please don't hesitate to r
       node.play().catch(e => console.error("Error playing video:", e));
     }
   }, []);
+
+  // ✅ Fix: Ensure video stream is attached when stream becomes ready (async case)
+  useEffect(() => {
+    if (cameraAllowed && userVideoRef.current && window.currentMediaStream) {
+      console.log("📹 Camera allowed, stream ready, attaching via useEffect");
+      userVideoRef.current.srcObject = window.currentMediaStream;
+      userVideoRef.current.play().catch(e => console.error("Play error from useEffect:", e));
+    }
+  }, [cameraAllowed]);
 
   useEffect(() => {
     if (cameraAllowed && companyType && role && !greeted) {
