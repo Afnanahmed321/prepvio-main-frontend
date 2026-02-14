@@ -33,7 +33,7 @@ const Categories = () => {
   const handleDashboardClick = () => navigate('/dashboard');
   const handleLogout = async () => {
     await logout();
-    navigate('/');
+    navigate('/', {replace: true});
   };
 
 
