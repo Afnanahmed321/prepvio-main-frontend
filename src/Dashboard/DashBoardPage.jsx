@@ -331,10 +331,11 @@ export const DashboardModal = ({ onClose }) => {
     return () => { document.body.style.overflow = "unset"; };
   }, []);
 
-  const handleLogout = async () => {
-    await logout();
-    onClose();
-  };
+ const handleLogout = async () => {
+  await logout();
+  onClose();
+  navigate("/", { replace: true });
+};
 
   const handleManageAccount = () => {
     onClose();
