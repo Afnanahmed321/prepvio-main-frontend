@@ -523,7 +523,7 @@ export default function VideoPlayer() {
 
   const handleLogout = async () => {
     await logout();
-    navigate("/login");
+    navigate("/login", {replace: true});
   };
 
   const handleDashboardClick = () => {
