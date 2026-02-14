@@ -47,10 +47,10 @@ function LearnAndPerform() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const profileDropdownRef = useRef(null);
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login");
-  };
+ const handleLogout = async () => {
+  await logout();
+  navigate("/login", { replace: true });
+};
 
   const handleDashboardClick = () => {
     navigate("/dashboard");
