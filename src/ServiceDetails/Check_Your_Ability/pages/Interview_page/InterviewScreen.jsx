@@ -653,30 +653,60 @@ function DynamicModel({ speechText, onSpeechEnd, ...props }) {
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(speechText);
-    utterance.rate = 2.0;  // Slower, more natural pace (0.9 = 90% of normal speed)
+    utterance.rate = 0.9;  // Slower, more natural pace (0.9 = 90% of normal speed)
     utterance.pitch = 1.0; // Normal pitch
     utterance.volume = 1.0; // Full volume
 
     let voices = window.speechSynthesis.getVoices();
 
-    const setFemaleVoice = () => {
-      voices = window.speechSynthesis.getVoices();
-      const femaleVoice =
-        voices.find(v => v.name.toLowerCase().includes("female")) ||
-        voices.find(v => v.name.toLowerCase().includes("woman")) ||
-        voices.find(v => v.name.toLowerCase().includes("samantha")) ||
-        voices.find(v => v.name.toLowerCase().includes("zira")) ||
-        voices.find(v => v.name.toLowerCase().includes("google us")) ||
-        voices[0];
+  const selectFemaleVoice = () => {
+  const voices = window.speechSynthesis.getVoices();
 
-      utterance.voice = femaleVoice;
-    };
+  if (!voices || voices.length === 0) return null;
 
-    if (voices.length === 0) {
-      window.speechSynthesis.onvoiceschanged = setFemaleVoice;
-    } else {
-      setFemaleVoice();
-    }
+  const preferredVoiceNames = [
+    "Google UK English Female",
+    "Google US English Female",
+    "Microsoft Zira",
+    "Samantha",
+    "Microsoft Heera",
+    "Microsoft Markira",
+  ];
+
+  // 1️⃣ Exact name match first
+  for (const name of preferredVoiceNames) {
+    const match = voices.find(v => v.name === name);
+    if (match) return match;
+  }
+
+  // 2️⃣ Regex hint fallback
+  const femaleHint = voices.find(v =>
+    /female|zira|samantha|heera|aria|jenny/i.test(v.name)
+  );
+  if (femaleHint) return femaleHint;
+
+  // 3️⃣ English fallback
+  const englishVoice = voices.find(v => v.lang.startsWith("en"));
+  if (englishVoice) return englishVoice;
+
+  // 4️⃣ Absolute fallback
+  return voices[0];
+};
+
+const applyVoice = () => {
+  const voice = selectFemaleVoice();
+  if (voice) {
+    utterance.voice = voice;
+  }
+};
+
+// Voices often load async
+if (window.speechSynthesis.getVoices().length === 0) {
+  window.speechSynthesis.onvoiceschanged = applyVoice;
+} else {
+  applyVoice();
+}
+
 
     utterance.onend = () => {
       if (intervalRef.current) {
