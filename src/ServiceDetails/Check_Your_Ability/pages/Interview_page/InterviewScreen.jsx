@@ -2202,7 +2202,7 @@ Key points:
                       imageRendering: 'auto',
                     }}
                   />
-                  <div className="absolute top-2 left-2 bg-black/70 text-[10px] text-white p-2 z-[9999] pointer-events-auto font-mono whitespace-pre rounded border border-red-500/50">
+                  {/* <div className="absolute top-2 left-2 bg-black/70 text-[10px] text-white p-2 z-[9999] pointer-events-auto font-mono whitespace-pre rounded border border-red-500/50">
                     <div className="font-bold text-red-400 mb-1">DEBUG_V1</div>
                     <div>CamAllowed: {String(cameraAllowed)}</div>
                     <div>Stream: {window.currentMediaStream ? (window.currentMediaStream.active ? "ACTIVE" : "INACTIVE") : "NULL"}</div>
@@ -2222,7 +2222,7 @@ Key points:
                     >
                       FORCE START
                     </button>
-                  </div>
+                  </div> */}
                 </>
               )}
 
