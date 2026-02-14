@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { PhoneOff, MessageSquare, Code, Maximize, Minimize, X, Mic, ListChecks, Play, Code2, Terminal, CheckCircle2, XCircle, ArrowRight, TrendingUp, Activity, AlertCircle, Users, Briefcase } from "lucide-react";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -2046,6 +2044,25 @@ In the meantime, if you have any follow-up questions, please don't hesitate to r
     startCamera();
   }, [isPreview]);
 
+  // ✅ Callback ref to handle video stream attachment reliably
+  const handleVideoRef = useCallback((node) => {
+    userVideoRef.current = node;
+    if (node && window.currentMediaStream) {
+      console.log("📹 Setting video source object from callback ref");
+      node.srcObject = window.currentMediaStream;
+      node.play().catch(e => console.error("Error playing video:", e));
+    }
+  }, []);
+
+  // ✅ Fix: Ensure video stream is attached when stream becomes ready (async case)
+  useEffect(() => {
+    if (cameraAllowed && userVideoRef.current && window.currentMediaStream) {
+      console.log("📹 Camera allowed, stream ready, attaching via useEffect");
+      userVideoRef.current.srcObject = window.currentMediaStream;
+      userVideoRef.current.play().catch(e => console.error("Play error from useEffect:", e));
+    }
+  }, [cameraAllowed]);
+
   useEffect(() => {
     if (cameraAllowed && companyType && role && !greeted) {
       const startAiConversation = async () => {
@@ -2171,19 +2188,42 @@ Key points:
                   <p className="text-gray-400">Video disabled in preview</p>
                 </div>
               ) : (
-                <video
-                  ref={userVideoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-[480px] object-cover"
-                  style={{
-                    transform: 'scaleX(-1) translateZ(0)',
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                    imageRendering: 'auto',
-                  }}
-                />
+                <>
+                  <video
+                    ref={handleVideoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-[480px] object-cover"
+                    style={{
+                      transform: 'scaleX(-1) translateZ(0)',
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
+                      imageRendering: 'auto',
+                    }}
+                  />
+                  <div className="absolute top-2 left-2 bg-black/70 text-[10px] text-white p-2 z-[9999] pointer-events-auto font-mono whitespace-pre rounded border border-red-500/50">
+                    <div className="font-bold text-red-400 mb-1">DEBUG_V1</div>
+                    <div>CamAllowed: {String(cameraAllowed)}</div>
+                    <div>Stream: {window.currentMediaStream ? (window.currentMediaStream.active ? "ACTIVE" : "INACTIVE") : "NULL"}</div>
+                    <div>VideoRef: {userVideoRef.current ? "OK" : "NULL"}</div>
+                    <div>ReadyState: {userVideoRef.current?.readyState}</div>
+                    <button
+                      onClick={() => {
+                        const v = userVideoRef.current;
+                        if (v && window.currentMediaStream) {
+                          v.srcObject = window.currentMediaStream;
+                          v.play().catch(e => alert(e.message));
+                        } else {
+                          alert("No Stream/Ref");
+                        }
+                      }}
+                      className="mt-2 bg-red-600 text-white px-2 py-1 rounded w-full"
+                    >
+                      FORCE START
+                    </button>
+                  </div>
+                </>
               )}
 
               {/* AI Speaking Indicator */}
