@@ -1,4 +1,4 @@
-// // src/store/authstore.js
+// src/store/authstore.js
 import { create } from "zustand";
 import { api } from "../lib/api";
 
@@ -58,20 +58,48 @@ export const useAuthStore = create((set) => ({
         }
     },
 
+    // ✅ UPDATED LOGOUT FUNCTION - THE KEY FIX
     logout: async () => {
         set({ isLoading: true, error: null });
         try {
+            console.log("🔄 Starting logout...");
+
+            // Call backend logout to clear cookies
             await api.post(`${API_URL}/logout`);
-            // ✅ Clear local user session
+            console.log("✅ Backend logout successful");
+
+            // ✅ Clear local storage
             localStorage.removeItem("USER_AUTH_TOKEN");
+            localStorage.clear();
+            sessionStorage.clear();
+            console.log("✅ Storage cleared");
+
+            // ✅ Clear Zustand state
             set({
                 user: null,
                 isAuthenticated: false,
                 error: null,
-                isLoading: false
+                isLoading: false,
+                message: null
             });
+            console.log("✅ Frontend state cleared");
+
+            return { success: true };
         } catch (error) {
-            set({ error: "Error logging out", isLoading: false });
+            console.error("❌ Logout error:", error);
+
+            // IMPORTANT: Still clear state even if API fails
+            localStorage.removeItem("USER_AUTH_TOKEN");
+            localStorage.clear();
+            sessionStorage.clear();
+            set({
+                user: null,
+                isAuthenticated: false,
+                error: "Error logging out",
+                isLoading: false,
+                message: null
+            });
+
             throw error;
         }
     },
@@ -98,25 +126,45 @@ export const useAuthStore = create((set) => ({
         }
     },
 
+    // ✅ UPDATED CHECKAUTH - Critical for preventing auto-login
     checkAuth: async () => {
         set({ isCheckingAuth: true, error: null });
 
         try {
+            console.log("🔍 Checking authentication...");
+            
             const response = await api.get(`${API_URL}/check-auth`);
 
-            set({
-                user: response.data.user,
-                isAuthenticated: true,
-                isCheckingAuth: false,
-            });
+            if (response.data.authenticated) {
+                set({
+                    user: response.data.user,
+                    isAuthenticated: true,
+                    isCheckingAuth: false,
+                    error: null,
+                });
+                console.log("✅ User is authenticated");
+                return true;
+            } else {
+                set({
+                    user: null,
+                    isAuthenticated: false,
+                    isCheckingAuth: false,
+                    error: null,
+                });
+                console.log("❌ User is not authenticated");
+                return false;
+            }
         } catch (error) {
-            console.log("checkAuth failed (expected if not logged in)");
+            console.log("🔍 checkAuth failed (expected if not logged in):", error.message);
+            
+            // If 401 or network error, user is not authenticated
             set({
                 user: null,
                 isAuthenticated: false,
                 isCheckingAuth: false,
                 error: null,
             });
+            return false;
         }
     },
 
@@ -128,7 +176,6 @@ export const useAuthStore = create((set) => ({
             console.error("Failed to refresh user:", error);
         }
     },
-
 
     forgotPassword: async (email) => {
         set({ isLoading: true, error: null });
@@ -158,43 +205,5 @@ export const useAuthStore = create((set) => ({
         }
     },
 
-    // Line 161 (existing)
-clearMessage: () => set({ message: null, error: null }),
-
-// Line 162 (NEW - blank line)
-
-// Lines 163-193 (NEW - handleOAuthCallback method)
-handleOAuthCallback: async (token) => {
-    set({ isLoading: true, error: null });
-    try {
-        // Store token in localStorage
-        if (token) {
-            localStorage.setItem("USER_AUTH_TOKEN", token);
-        }
-
-        // Validate token and fetch user data
-        const response = await api.get(`${API_URL}/check-auth`);
-
-        set({
-            user: response.data.user,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
-        });
-
-        return response.data.user;
-    } catch (error) {
-        // Clear invalid token
-        localStorage.removeItem("USER_AUTH_TOKEN");
-        set({
-            error: error.response?.data?.message || "OAuth authentication failed",
-            isLoading: false,
-            isAuthenticated: false,
-            user: null,
-        });
-        throw error;
-    }
-},
-
-
+    clearMessage: () => set({ message: null, error: null }),
 }));
