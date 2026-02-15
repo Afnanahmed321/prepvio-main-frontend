@@ -54,7 +54,6 @@ import LoadingSpinner from "./components/LoadingSpinner.jsx";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authstore.js";
 
-import OAuthCallback from "./pages/OAuthCallback.jsx";
 /* ======================================================
    PROTECTED ROUTE (AUTH + VERIFIED)
 ====================================================== */
@@ -106,14 +105,28 @@ function App() {
 
 	const showFooter = !isDashboard && !isInterview;
 
+	// ✅ CHECK AUTH ON APP LOAD - CRITICAL FIX TO PREVENT AUTO-LOGIN AFTER LOGOUT
+	useEffect(() => {
+		const verifyAuth = async () => {
+			console.log("🔍 App mounted - Checking authentication on load...");
+			await checkAuth();
+		};
+
+		verifyAuth();
+	}, []); // Empty dependency array - runs only once on app mount
+
 	// ✅ CLEANED UP: Single socket connection useEffect
 	useEffect(() => {
 		if (isAuthenticated && user?._id) {
+			console.log("🔌 Connecting socket for user:", user._id);
 			connectSocket(user._id);
 		}
 
 		return () => {
-			disconnectSocket();
+			if (isAuthenticated) {
+				console.log("🔌 Disconnecting socket");
+				disconnectSocket();
+			}
 		};
 	}, [isAuthenticated, user]);
 
@@ -141,11 +154,10 @@ function App() {
 	const [companyType, setCompanyType] = useState(null);
 	const [role, setRole] = useState(null);
 
-	useEffect(() => {
-		checkAuth();
-	}, [checkAuth]);
-
-	if (isCheckingAuth) return <LoadingSpinner />;
+	// ✅ Show loading spinner while checking auth
+	if (isCheckingAuth) {
+		return <LoadingSpinner />;
+	}
 
 	return (
 		<>
@@ -210,8 +222,6 @@ function App() {
 				<Route path="/verify-email" element={<EmailVerificationPage />} />
 				<Route path="/forgot-password" element={<ForgotPasswordPage />} />
 				<Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-				<Route path="/auth/callback" element={<OAuthCallback />} />
-				
 
 				{/* Services */}
 				<Route path="/services/learn--perform" element={<LearnAndPerform />} />
@@ -260,7 +270,6 @@ function App() {
 				{/* Catch-all */}
 				<Route path='*' element={<Navigate to='/' replace />} />
 				<Route path="/razorpay-test" element={<RazorpayTest />} />
-				{/* Route moved to Dashboard */}
 			</Routes>
 
 			{showFooter && <Footer />}
