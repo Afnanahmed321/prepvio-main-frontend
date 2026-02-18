@@ -86,22 +86,18 @@ const SignUpPage = () => {
         {/* Social Buttons - Tighter spacing */}
         <div className="space-y-4">
           <div className="space-y-2">
-            <SocialButton
-              icon={Globe}
-              label="Continue with Google"
-              onClick={handleGoogleSignup}
-            />
+            
 
             {/* <SocialButton icon={Linkedin} label="Continue with LinkedIn" /> */}
           </div>
 
-          <div className="relative flex items-center py-1">
+          {/* <div className="relative flex items-center py-1">
             <div className="flex-grow border-t border-gray-200"></div>
             <span className="flex-shrink-0 mx-3 text-gray-400 text-[10px] font-bold uppercase tracking-wider">
               Or register with email
             </span>
             <div className="flex-grow border-t border-gray-200"></div>
-          </div>
+          </div> */}
 
           {/* Actual Logic Form - Reduced Input Padding/Size */}
           <form className="space-y-3" onSubmit={handleSignUp}>
