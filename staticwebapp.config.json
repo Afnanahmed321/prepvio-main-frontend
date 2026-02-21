@@ -1,0 +1,8 @@
+{
+  "routes": [
+    {
+      "route": "/api/*",
+      "rewrite": "https://prepvio-mainbackend-gefsb7htbqdgbmgb.centralindia-01.azurewebsites.net/api/:splat"
+    }
+  ]
+}
